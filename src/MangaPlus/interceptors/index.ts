@@ -1,2 +1,2 @@
-export { ImageInterceptor } from "./ImageInterceptor"
-export { ThumbnailInterceptor } from "./ThumbnailInterceptor"
+export { ImageInterceptor } from './ImageInterceptor'
+export { ThumbnailInterceptor } from './ThumbnailInterceptor'

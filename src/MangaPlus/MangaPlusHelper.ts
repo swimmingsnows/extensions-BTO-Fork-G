@@ -1,19 +1,19 @@
-import { Title } from "./APIInterface"
+import { Title } from './APIInterface'
 
 export class TitleList {
     private static titleList: Title[] = []
   
-    static get() {
-      return TitleList.titleList
+    static get(): Title[] {
+        return TitleList.titleList
     }
   
-    static set(list: Title[]) {
-      TitleList.titleList = list
+    static set(list: Title[]): void {
+        TitleList.titleList = list
     }
 }
 
 export const LangCode: string[] = [
-'en', 'es', 'fr', 'id', 'pt', 'ru', 'th'
+    'en', 'es', 'fr', 'id', 'pt', 'ru', 'th'
 ]
 
 export const MANGAPLUS_DOMAIN = 'https://mangaplus.shueisha.co.jp'
