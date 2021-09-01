@@ -8,9 +8,6 @@ import {HEX_GROUP} from '../MangaPlusHelper'
 
 export class ImageInterceptor implements RequestInterceptor {
     encryptionKeys: Record<string, string> = {}
-
-    stateManager = createSourceStateManager({})
-
     async interceptRequest(request: Request): Promise<Request> {
         const encryptionKey = request.url.match(/[?&]encryptionKey=([^&]\w+)&?/)
         if (encryptionKey == null || encryptionKey[1] == null) return request
@@ -60,6 +57,6 @@ export class ImageInterceptor implements RequestInterceptor {
         const keyStream = streamSplit.map((x) => parseInt(x, 16))
         const blockSizeInBytes = keyStream.length
 
-        return createRawData(image.map((value, i) => value ^ keyStream[i % blockSizeInBytes]))
+        return createRawData(image.map((value, i) => value ^ (keyStream[i % blockSizeInBytes] ?? 0)))
     }
 }
