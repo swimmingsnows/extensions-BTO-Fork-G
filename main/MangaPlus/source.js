@@ -7664,6 +7664,8 @@ BufferWriter._configure();
 
 },{"./util/minimal":83,"./writer":86}],88:[function(require,module,exports){
 "use strict";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -7672,7 +7674,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MangaPlusResponse = exports.SuccessResult = exports.WebHomeViewV3 = exports.AllTitlesViewV2 = exports.AllTitlesGroup = exports.MangaViewer = exports.TitleDetailView = exports.TitleRankingView = exports.UpdatedTitleV2Group = exports.OriginalTitleGroup = exports.UpdatedTitle = exports.Title = exports.MangaPlusPage = exports.MangaPage = exports.ErrorResult = exports.Popup = exports.Chapter = exports.UpdateTiming = exports.Language = exports.Action = void 0;
-// @ts-nocheck
 const light_1 = require("protobufjs/light");
 var Action;
 (function (Action) {
@@ -7706,265 +7707,265 @@ var UpdateTiming;
 let Chapter = class Chapter extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, "int32", "required")
+    light_1.Field.d(1, 'int32', 'required')
 ], Chapter.prototype, "titleId", void 0);
 __decorate([
-    light_1.Field.d(2, "int32", "required")
+    light_1.Field.d(2, 'int32', 'required')
 ], Chapter.prototype, "chapterId", void 0);
 __decorate([
-    light_1.Field.d(3, "string", "required")
+    light_1.Field.d(3, 'string', 'required')
 ], Chapter.prototype, "name", void 0);
 __decorate([
-    light_1.Field.d(4, "string", "optional", null)
+    light_1.Field.d(4, 'string', 'optional', null)
 ], Chapter.prototype, "subTitle", void 0);
 __decorate([
-    light_1.Field.d(6, "int32", "required")
+    light_1.Field.d(6, 'int32', 'required')
 ], Chapter.prototype, "startTimeStamp", void 0);
 __decorate([
-    light_1.Field.d(7, "int32", "required")
+    light_1.Field.d(7, 'int32', 'required')
 ], Chapter.prototype, "endTimeStamp", void 0);
 Chapter = __decorate([
-    light_1.Type.d("Chapter")
+    light_1.Type.d('Chapter')
 ], Chapter);
 exports.Chapter = Chapter;
 let Popup = class Popup extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, "string", "required")
+    light_1.Field.d(1, 'string', 'required')
 ], Popup.prototype, "subject", void 0);
 __decorate([
-    light_1.Field.d(2, "string", "required")
+    light_1.Field.d(2, 'string', 'required')
 ], Popup.prototype, "body", void 0);
 Popup = __decorate([
-    light_1.Type.d("Popup")
+    light_1.Type.d('Popup')
 ], Popup);
 exports.Popup = Popup;
 let ErrorResult = class ErrorResult extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, Action, "required")
+    light_1.Field.d(1, Action, 'required')
 ], ErrorResult.prototype, "action", void 0);
 __decorate([
-    light_1.Field.d(2, Popup, "required")
+    light_1.Field.d(2, Popup, 'required')
 ], ErrorResult.prototype, "englishPopup", void 0);
 __decorate([
-    light_1.Field.d(3, Popup, "required")
+    light_1.Field.d(3, Popup, 'required')
 ], ErrorResult.prototype, "spanishPopup", void 0);
 ErrorResult = __decorate([
-    light_1.Type.d("ErrorResult")
+    light_1.Type.d('ErrorResult')
 ], ErrorResult);
 exports.ErrorResult = ErrorResult;
 let MangaPage = class MangaPage extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, "string", "required")
+    light_1.Field.d(1, 'string', 'required')
 ], MangaPage.prototype, "imageUrl", void 0);
 __decorate([
-    light_1.Field.d(2, "int32", "required")
+    light_1.Field.d(2, 'int32', 'required')
 ], MangaPage.prototype, "width", void 0);
 __decorate([
-    light_1.Field.d(3, "int32", "required")
+    light_1.Field.d(3, 'int32', 'required')
 ], MangaPage.prototype, "height", void 0);
 __decorate([
-    light_1.Field.d(5, "string", "optional", null)
+    light_1.Field.d(5, 'string', 'optional', null)
 ], MangaPage.prototype, "encryptionKey", void 0);
 MangaPage = __decorate([
-    light_1.Type.d("MangaPage")
+    light_1.Type.d('MangaPage')
 ], MangaPage);
 exports.MangaPage = MangaPage;
 let MangaPlusPage = class MangaPlusPage extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, MangaPage, "optional", null)
+    light_1.Field.d(1, MangaPage, 'optional', null)
 ], MangaPlusPage.prototype, "page", void 0);
 MangaPlusPage = __decorate([
-    light_1.Type.d("MangaPlusPage")
+    light_1.Type.d('MangaPlusPage')
 ], MangaPlusPage);
 exports.MangaPlusPage = MangaPlusPage;
 let Title = class Title extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, "int32", "required")
+    light_1.Field.d(1, 'int32', 'required')
 ], Title.prototype, "titleId", void 0);
 __decorate([
-    light_1.Field.d(2, "string", "required")
+    light_1.Field.d(2, 'string', 'required')
 ], Title.prototype, "name", void 0);
 __decorate([
-    light_1.Field.d(3, "string", "required")
+    light_1.Field.d(3, 'string', 'required')
 ], Title.prototype, "author", void 0);
 __decorate([
-    light_1.Field.d(4, "string", "required")
+    light_1.Field.d(4, 'string', 'required')
 ], Title.prototype, "portraitImageUrl", void 0);
 __decorate([
-    light_1.Field.d(5, "string", "required")
+    light_1.Field.d(5, 'string', 'required')
 ], Title.prototype, "landscapeImageUrl", void 0);
 __decorate([
-    light_1.Field.d(6, "int32", "optional", 0)
+    light_1.Field.d(6, 'int32', 'optional', 0)
 ], Title.prototype, "viewCount", void 0);
 __decorate([
-    light_1.Field.d(7, Language, "optional", Language.ENGLISH)
+    light_1.Field.d(7, Language, 'optional', Language.ENGLISH)
 ], Title.prototype, "language", void 0);
 Title = __decorate([
-    light_1.Type.d("Title")
+    light_1.Type.d('Title')
 ], Title);
 exports.Title = Title;
 let UpdatedTitle = class UpdatedTitle extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, Title, "required")
+    light_1.Field.d(1, Title, 'required')
 ], UpdatedTitle.prototype, "title", void 0);
 UpdatedTitle = __decorate([
-    light_1.Type.d("UpdatedTitle")
+    light_1.Type.d('UpdatedTitle')
 ], UpdatedTitle);
 exports.UpdatedTitle = UpdatedTitle;
 let OriginalTitleGroup = class OriginalTitleGroup extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, "string", "required")
+    light_1.Field.d(1, 'string', 'required')
 ], OriginalTitleGroup.prototype, "theTitle", void 0);
 __decorate([
-    light_1.Field.d(3, UpdatedTitle, "repeated", [])
+    light_1.Field.d(3, UpdatedTitle, 'repeated', [])
 ], OriginalTitleGroup.prototype, "titles", void 0);
 OriginalTitleGroup = __decorate([
-    light_1.Type.d("OriginalTitleGroup")
+    light_1.Type.d('OriginalTitleGroup')
 ], OriginalTitleGroup);
 exports.OriginalTitleGroup = OriginalTitleGroup;
 let UpdatedTitleV2Group = class UpdatedTitleV2Group extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, "string", "required")
+    light_1.Field.d(1, 'string', 'required')
 ], UpdatedTitleV2Group.prototype, "groupName", void 0);
 __decorate([
-    light_1.Field.d(2, OriginalTitleGroup, "repeated", [])
+    light_1.Field.d(2, OriginalTitleGroup, 'repeated', [])
 ], UpdatedTitleV2Group.prototype, "titleGroups", void 0);
 UpdatedTitleV2Group = __decorate([
-    light_1.Type.d("UpdatedTitleV2Group")
+    light_1.Type.d('UpdatedTitleV2Group')
 ], UpdatedTitleV2Group);
 exports.UpdatedTitleV2Group = UpdatedTitleV2Group;
 let TitleRankingView = class TitleRankingView extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, Title, "repeated", [])
+    light_1.Field.d(1, Title, 'repeated', [])
 ], TitleRankingView.prototype, "titles", void 0);
 TitleRankingView = __decorate([
-    light_1.Type.d("TitleRankingView")
+    light_1.Type.d('TitleRankingView')
 ], TitleRankingView);
 exports.TitleRankingView = TitleRankingView;
 let TitleDetailView = class TitleDetailView extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, Title, "required")
+    light_1.Field.d(1, Title, 'required')
 ], TitleDetailView.prototype, "title", void 0);
 __decorate([
-    light_1.Field.d(2, "string", "required")
+    light_1.Field.d(2, 'string', 'required')
 ], TitleDetailView.prototype, "titleImageUrl", void 0);
 __decorate([
-    light_1.Field.d(3, "string", "required")
+    light_1.Field.d(3, 'string', 'required')
 ], TitleDetailView.prototype, "overview", void 0);
 __decorate([
-    light_1.Field.d(4, "string", "required")
+    light_1.Field.d(4, 'string', 'required')
 ], TitleDetailView.prototype, "backgroundImageUrl", void 0);
 __decorate([
-    light_1.Field.d(5, "int32", "optional", 0)
+    light_1.Field.d(5, 'int32', 'optional', 0)
 ], TitleDetailView.prototype, "nextTimeStamp", void 0);
 __decorate([
-    light_1.Field.d(6, UpdateTiming, "optional", UpdateTiming.DAY)
+    light_1.Field.d(6, UpdateTiming, 'optional', UpdateTiming.DAY)
 ], TitleDetailView.prototype, "updateTiming", void 0);
 __decorate([
-    light_1.Field.d(7, "string", "optional", "")
+    light_1.Field.d(7, 'string', 'optional', '')
 ], TitleDetailView.prototype, "viewingPeriodDescription", void 0);
 __decorate([
-    light_1.Field.d(8, "string", "optional", "")
+    light_1.Field.d(8, 'string', 'optional', '')
 ], TitleDetailView.prototype, "nonAppearanceInfo", void 0);
 __decorate([
-    light_1.Field.d(9, Chapter, "repeated", [])
+    light_1.Field.d(9, Chapter, 'repeated', [])
 ], TitleDetailView.prototype, "firstChapterList", void 0);
 __decorate([
-    light_1.Field.d(10, Chapter, "repeated", [])
+    light_1.Field.d(10, Chapter, 'repeated', [])
 ], TitleDetailView.prototype, "lastChapterList", void 0);
 __decorate([
-    light_1.Field.d(14, "bool", "optional", true)
+    light_1.Field.d(14, 'bool', 'optional', true)
 ], TitleDetailView.prototype, "isSimulReleased", void 0);
 __decorate([
-    light_1.Field.d(17, "bool", "optional", true)
+    light_1.Field.d(17, 'bool', 'optional', true)
 ], TitleDetailView.prototype, "chaptersDescending", void 0);
 TitleDetailView = __decorate([
-    light_1.Type.d("TitleDetailView")
+    light_1.Type.d('TitleDetailView')
 ], TitleDetailView);
 exports.TitleDetailView = TitleDetailView;
 let MangaViewer = class MangaViewer extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, MangaPlusPage, "repeated", [])
+    light_1.Field.d(1, MangaPlusPage, 'repeated', [])
 ], MangaViewer.prototype, "pages", void 0);
 MangaViewer = __decorate([
-    light_1.Type.d("MangaViewer")
+    light_1.Type.d('MangaViewer')
 ], MangaViewer);
 exports.MangaViewer = MangaViewer;
 let AllTitlesGroup = class AllTitlesGroup extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, "string", "required")
+    light_1.Field.d(1, 'string', 'required')
 ], AllTitlesGroup.prototype, "theTitle", void 0);
 __decorate([
-    light_1.Field.d(2, Title, "repeated", [])
+    light_1.Field.d(2, Title, 'repeated', [])
 ], AllTitlesGroup.prototype, "titles", void 0);
 AllTitlesGroup = __decorate([
-    light_1.Type.d("AllTitlesGroup")
+    light_1.Type.d('AllTitlesGroup')
 ], AllTitlesGroup);
 exports.AllTitlesGroup = AllTitlesGroup;
 let AllTitlesViewV2 = class AllTitlesViewV2 extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, AllTitlesGroup, "repeated", [])
+    light_1.Field.d(1, AllTitlesGroup, 'repeated', [])
 ], AllTitlesViewV2.prototype, "allTitlesGroup", void 0);
 AllTitlesViewV2 = __decorate([
-    light_1.Type.d("AllTitlesViewV2")
+    light_1.Type.d('AllTitlesViewV2')
 ], AllTitlesViewV2);
 exports.AllTitlesViewV2 = AllTitlesViewV2;
 let WebHomeViewV3 = class WebHomeViewV3 extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(2, UpdatedTitleV2Group, "repeated", [])
+    light_1.Field.d(2, UpdatedTitleV2Group, 'repeated', [])
 ], WebHomeViewV3.prototype, "groups", void 0);
 WebHomeViewV3 = __decorate([
-    light_1.Type.d("WebHomeViewV3")
+    light_1.Type.d('WebHomeViewV3')
 ], WebHomeViewV3);
 exports.WebHomeViewV3 = WebHomeViewV3;
 let SuccessResult = class SuccessResult extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, "bool", "optional", false)
+    light_1.Field.d(1, 'bool', 'optional', false)
 ], SuccessResult.prototype, "isFeaturedUpdated", void 0);
 __decorate([
-    light_1.Field.d(6, TitleRankingView, "optional", null)
+    light_1.Field.d(6, TitleRankingView, 'optional', null)
 ], SuccessResult.prototype, "titleRankingView", void 0);
 __decorate([
-    light_1.Field.d(8, TitleDetailView, "optional", null)
+    light_1.Field.d(8, TitleDetailView, 'optional', null)
 ], SuccessResult.prototype, "titleDetailView", void 0);
 __decorate([
-    light_1.Field.d(10, MangaViewer, "optional", null)
+    light_1.Field.d(10, MangaViewer, 'optional', null)
 ], SuccessResult.prototype, "mangaViewer", void 0);
 __decorate([
-    light_1.Field.d(25, AllTitlesViewV2, "optional", null)
+    light_1.Field.d(25, AllTitlesViewV2, 'optional', null)
 ], SuccessResult.prototype, "allTitlesViewV2", void 0);
 __decorate([
-    light_1.Field.d(31, WebHomeViewV3, "optional", null)
+    light_1.Field.d(31, WebHomeViewV3, 'optional', null)
 ], SuccessResult.prototype, "webHomeViewV3", void 0);
 SuccessResult = __decorate([
-    light_1.Type.d("SuccessResult")
+    light_1.Type.d('SuccessResult')
 ], SuccessResult);
 exports.SuccessResult = SuccessResult;
 let MangaPlusResponse = class MangaPlusResponse extends light_1.Message {
 };
 __decorate([
-    light_1.Field.d(1, SuccessResult, "optional", null)
+    light_1.Field.d(1, SuccessResult, 'optional', null)
 ], MangaPlusResponse.prototype, "success", void 0);
 __decorate([
-    light_1.Field.d(2, ErrorResult, "optional", null)
+    light_1.Field.d(2, ErrorResult, 'optional', null)
 ], MangaPlusResponse.prototype, "error", void 0);
 MangaPlusResponse = __decorate([
-    light_1.Type.d("MangaPlusResponse")
+    light_1.Type.d('MangaPlusResponse')
 ], MangaPlusResponse);
 exports.MangaPlusResponse = MangaPlusResponse;
 
@@ -8023,19 +8024,19 @@ class MangaPlus extends paperback_extensions_common_1.Source {
     }
     getMangaDetails(mangaId) {
         return __awaiter(this, void 0, void 0, function* () {
-            let request = createRequestObject({
+            const request = createRequestObject({
                 url: `${MangaPlusHelper_1.API_DOMAIN}/title_detail`,
                 method: 'GET',
                 param: `?title_id=${mangaId}`
             });
             const response = yield this.requestManager.schedule(request, 1);
-            let data = createByteArray(response.rawData);
+            const data = createByteArray(response.rawData);
             return this.parser.parseMangaDetails(data, mangaId);
         });
     }
     getChapters(mangaId) {
         return __awaiter(this, void 0, void 0, function* () {
-            let request = createRequestObject({
+            const request = createRequestObject({
                 url: `${MangaPlusHelper_1.API_DOMAIN}/title_detail`,
                 method: 'GET',
                 param: `?title_id=${mangaId}`
@@ -8048,7 +8049,7 @@ class MangaPlus extends paperback_extensions_common_1.Source {
     getChapterDetails(mangaId, chapterId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let request = createRequestObject({
+                const request = createRequestObject({
                     url: new Utility_1.URLBuilder(MangaPlusHelper_1.API_DOMAIN)
                         .addPathComponent('manga_viewer')
                         .addQueryParameter('chapter_id', chapterId)
@@ -8062,7 +8063,7 @@ class MangaPlus extends paperback_extensions_common_1.Source {
                     },
                     method: 'GET'
                 });
-                let response = yield this.requestManager.schedule(request, 1);
+                const response = yield this.requestManager.schedule(request, 1);
                 const data = createByteArray(response.rawData);
                 const pages = this.parser.parseChapterDetails(data);
                 return createChapterDetails({
@@ -8637,8 +8638,8 @@ class URLBuilder {
 exports.URLBuilder = URLBuilder;
 function uuid() {
     // Generates a pseudo-random UUID
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = (Math.random() * 16) | 0, v = c == 'x' ? r : (r & 0x3) | 0x8;
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0, v = c == 'x' ? r : (r & 0x3) | 0x8;
         return v.toString(16);
     });
 }
@@ -8741,13 +8742,13 @@ class ThumbnailInterceptor {
             const isBadCode = response.status == 401 || response.status == 404;
             const url = response.request.url;
             if (isBadCode && url.includes(MangaPlusHelper_1.TITLE_THUMBNAIL_PATH)) {
-                const titleId = parseInt((_a = url.split(`/${MangaPlusHelper_1.TITLE_THUMBNAIL_PATH}`)[0].split("/").pop()) !== null && _a !== void 0 ? _a : "");
-                const title = MangaPlusHelper_1.TitleList.get().find((id) => id == titleId);
+                const titleId = parseInt((_a = url.split(`/${MangaPlusHelper_1.TITLE_THUMBNAIL_PATH}`)[0].split('/').pop()) !== null && _a !== void 0 ? _a : '');
+                const title = MangaPlusHelper_1.TitleList.get().find((title) => title.titleId == titleId);
                 if (!title)
                     return response;
                 const request = createRequestObject({
                     url: title.portraitImageUrl,
-                    method: "GET",
+                    method: 'GET',
                     headers: response.request.headers,
                 });
                 return yield this.requestManager.schedule(request, 1);
