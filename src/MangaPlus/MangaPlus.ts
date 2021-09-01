@@ -106,9 +106,7 @@ export class MangaPlus extends Source {
         mangaId: string,
         chapterId: string
     ): Promise<ChapterDetails> {
-
         try {
-
             const request = createRequestObject({
                 url: new URLBuilder(API_DOMAIN)
                     .addPathComponent('manga_viewer')
@@ -129,7 +127,6 @@ export class MangaPlus extends Source {
                 },
                 method: 'GET'
             })
-
 
             const response = await this.requestManager.schedule(request, 1)
 
@@ -153,29 +150,27 @@ export class MangaPlus extends Source {
         query: SearchRequest,
         metadata: any
     ): Promise<PagedResults> {
-
-        const offset: number = metadata?.offset ?? 0
-
-        let id
-        if (query.parameters && query.parameters['id'] && query.parameters['id'][0]) {
-            id = query.parameters['id'][0].match(ID_REGEX)
-        }
-
-        if (id && id[0]) {
-            const manga = await this.getMangaDetails(id[0])
-
-            return createPagedResults({
-                results: [
-                    createMangaTile({
-                        id: `${id[0]}`,
-                        image: manga.image,
-                        title: createIconText({ text: manga.titles[0] ?? '' })
-                    })
-                ]
-            })
-        }
-
         try{
+            const offset: number = metadata?.offset ?? 0
+
+            let id
+            if (query.parameters && query.parameters['id'] && query.parameters['id'][0]) {
+                id = query.parameters['id'][0].match(ID_REGEX)
+            }
+
+            if (id && id[0]) {
+                const manga = await this.getMangaDetails(id[0])
+
+                return createPagedResults({
+                    results: [
+                        createMangaTile({
+                            id: `${id[0]}`,
+                            image: manga.image,
+                            title: createIconText({ text: manga.titles[0] ?? '' })
+                        })
+                    ]
+                })
+            }
             const request = createRequestObject({
                 url: `${API_DOMAIN}/title_list/allV2`,
                 method: 'GET',
@@ -271,53 +266,59 @@ export class MangaPlus extends Source {
         homepageSectionId: string,
         metadata: any
     ): Promise<PagedResults> {
-        const offset: number = metadata?.offset ?? 0
-        let results
-        let requests
-        switch (homepageSectionId) {
-            case 'popular': {
-                requests = [createRequestObject(PopularRequest)]
+        try {
+            const offset: number = metadata?.offset ?? 0
+            let results
+            let requests
+            switch (homepageSectionId) {
+                case 'popular': {
+                    requests = [createRequestObject(PopularRequest)]
 
-                const responses = await Promise.all(
-                    requests.map((request) => this.requestManager.schedule(request, 1))
-                )
-                const data = responses.map((response) =>
-                    createByteArray(response.rawData)
-                )
+                    const responses = await Promise.all(
+                        requests.map((request) => this.requestManager.schedule(request, 1))
+                    )
+                    const data = responses.map((response) =>
+                        createByteArray(response.rawData)
+                    )
 
-                results = this.parser
-                    .parsePopularSection(data, await getLanguages(this.stateManager))
-                    .slice(offset, offset + 100)
+                    results = this.parser
+                        .parsePopularSection(data, await getLanguages(this.stateManager))
+                        .slice(offset, offset + 100)
 
-                break
+                    break
+                }
+                case 'latest': {
+                    requests = [
+                        createRequestObject(LatestRequest),
+                        createRequestObject(PopularRequest)
+                    ]
+
+                    const responses = await Promise.all(
+                        requests.map((request) => this.requestManager.schedule(request, 1))
+                    )
+                    const data = responses.map((response) =>
+                        createByteArray(response.rawData)
+                    )
+
+                    results = this.parser
+                        .parseRecentUpdatesSection(data, await getLanguages(this.stateManager))
+                        .slice(offset, offset + 100)
+
+                    break
+                }
+                default:
+                    return Promise.resolve(createPagedResults({results: []}))
             }
-            case 'latest': {
-                requests = [
-                    createRequestObject(LatestRequest),
-                    createRequestObject(PopularRequest)
-                ]
 
-                const responses = await Promise.all(
-                    requests.map((request) => this.requestManager.schedule(request, 1))
-                )
-                const data = responses.map((response) =>
-                    createByteArray(response.rawData)
-                )
-
-                results = this.parser
-                    .parseRecentUpdatesSection(data, await getLanguages(this.stateManager))
-                    .slice(offset, offset + 100)
-
-                break
-            }
-            default:
-                return Promise.resolve(createPagedResults({ results: [] }))
+            return createPagedResults({
+                results,
+                metadata: {offset: offset + 100}
+            })
         }
-
-        return createPagedResults({
-            results,
-            metadata: { offset: offset + 100 }
-        })
+        catch (error: any) {
+            console.log(error.message)
+            throw new Error(error.message)
+        }
     }
 
     override async getSourceMenu(): Promise<Section> {
