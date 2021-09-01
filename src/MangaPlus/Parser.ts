@@ -114,7 +114,7 @@ export class Parser {
         if (result.success.titleDetailView != null) {
             const title = result.success.titleDetailView.title
 
-            if (languages.includes(LangCode[title.language])) {
+            if (LangCode[title.language] && languages.includes(LangCode[title.language] ?? 'unknown')) {
                 return [
                     createMangaTile({
                         id: `${title.titleId}`,
@@ -129,7 +129,7 @@ export class Parser {
             result.success.allTitlesViewV2.allTitlesGroup
                 .flatMap((allTitlesGroup) => allTitlesGroup.titles)
                 .filter((title) =>
-                    languages.includes(LangCode[title.language])
+                    languages.includes(LangCode[title.language] ?? 'unknown')
                 )
         )
 
@@ -154,6 +154,7 @@ export class Parser {
                         .toLowerCase()
                         .includes(query.parameters['author'][0].toLowerCase())
                 }
+                else return false
             })
             .map((title) =>
                 createMangaTile({
@@ -165,14 +166,14 @@ export class Parser {
     }
 
     parsePopularSection(data: Uint8Array[], languages: string[]): MangaTile[] {
-        const result = MangaPlusResponse.decode(data[0])
+        const result = MangaPlusResponse.decode(data[0] ?? new Uint8Array(0))
 
         if (result.success == null) {
             throw new Error('Invalid response from server')
         }
         TitleList.set(
             result.success.titleRankingView.titles.filter((title) =>
-                languages.includes(LangCode[title.language])
+                languages.includes(LangCode[title.language] ?? 'unknown')
             )
         )
 
@@ -190,7 +191,7 @@ export class Parser {
         data: Uint8Array[],
         languages: string[]
     ): MangaTile[] {
-        const result = MangaPlusResponse.decode(data[0])
+        const result = MangaPlusResponse.decode(data[0] ?? new Uint8Array(0))
 
         if (result.success == null) {
             throw new Error('Invalid response from server')
@@ -198,12 +199,12 @@ export class Parser {
 
         // Fetch all titles to get newer thumbnail urls at the interceptor.
 
-        const popularResult = MangaPlusResponse.decode(data[1])
+        const popularResult = MangaPlusResponse.decode(data[1] ?? new Uint8Array(0))
 
         if (popularResult.success != null) {
             TitleList.set(
                 popularResult.success.titleRankingView.titles.filter((title) =>
-                    languages.includes(LangCode[title.language])
+                    languages.includes(LangCode[title.language] ?? 'unknown')
                 )
             )
         }
@@ -212,7 +213,7 @@ export class Parser {
             .flatMap((group) => group.titleGroups)
             .flatMap((titleGroup) => titleGroup.titles)
             .map((title) => title.title)
-            .filter((title) => languages.includes(LangCode[title.language]))
+            .filter((title) => languages.includes(LangCode[title.language] ?? 'unknown'))
             .map((title) =>
                 createMangaTile({
                     id: `${title.titleId}`,
