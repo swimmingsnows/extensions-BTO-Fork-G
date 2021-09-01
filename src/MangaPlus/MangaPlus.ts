@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable no-case-declarations */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import {
     Chapter,
     ChapterDetails,
@@ -67,7 +72,7 @@ export class MangaPlus extends Source {
         ])
     })
 
-    getMangaShareUrl(mangaId: string): string {
+    override getMangaShareUrl(mangaId: string): string {
         return `${MANGAPLUS_DOMAIN}/titles/${mangaId}`
     }
 
@@ -114,7 +119,7 @@ export class MangaPlus extends Source {
                     )
                     .addQueryParameter(
                         'img_quality',
-                        (await getResolution(this.stateManager))[0]
+                        (await getResolution(this.stateManager))[0]!
                             .toLowerCase()
                             .replace(' ', '_')
                     )
@@ -148,8 +153,11 @@ export class MangaPlus extends Source {
         query: SearchRequest,
         metadata: any
     ): Promise<PagedResults> {
+
+        const offset: number = metadata?.offset ?? 0
+
         let id
-        if (query.parameters && query.parameters['id']) {
+        if (query.parameters && query.parameters['id'] && query.parameters['id'][0]) {
             id = query.parameters['id'][0].match(ID_REGEX)
         }
 
@@ -161,7 +169,7 @@ export class MangaPlus extends Source {
                     createMangaTile({
                         id: `${id[0]}`,
                         image: manga.image,
-                        title: createIconText({ text: manga.titles[0] })
+                        title: createIconText({ text: manga.titles[0] ?? '' })
                     })
                 ]
             })
@@ -182,14 +190,15 @@ export class MangaPlus extends Source {
             data,
             await getLanguages(this.stateManager),
             query
-        )
+        ).slice(offset, offset + 100)
 
         return createPagedResults({
-            results
+            results,
+            metadata: { offset: offset + 100 }
         })
     }
 
-    async getHomePageSections(
+    override async getHomePageSections(
         sectionCallback: (section: HomeSection) => void
     ): Promise<void> {
         const languages = await getLanguages(this.stateManager)
@@ -252,7 +261,7 @@ export class MangaPlus extends Source {
         await Promise.all(promises)
     }
 
-    async getViewMoreItems(
+    override async getViewMoreItems(
         homepageSectionId: string,
         metadata: any
     ): Promise<PagedResults> {
@@ -305,7 +314,7 @@ export class MangaPlus extends Source {
         })
     }
 
-    async getSourceMenu(): Promise<Section> {
+    override async getSourceMenu(): Promise<Section> {
         return Promise.resolve(
             createSection({
                 id: 'main',
@@ -318,8 +327,8 @@ export class MangaPlus extends Source {
             })
         )
     }
-    
-    getCloudflareBypassRequest(): Request {
+
+    override getCloudflareBypassRequest(): Request {
         return createRequestObject({
             url: `${MANGAPLUS_DOMAIN}`,
             method: 'GET'
