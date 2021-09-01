@@ -8674,7 +8674,6 @@ const MangaPlusHelper_1 = require("../MangaPlusHelper");
 class ImageInterceptor {
     constructor() {
         this.encryptionKeys = {};
-        this.stateManager = createSourceStateManager({});
     }
     interceptRequest(request) {
         var _a;
@@ -8716,7 +8715,7 @@ class ImageInterceptor {
             throw new Error('Invalid image');
         const keyStream = streamSplit.map((x) => parseInt(x, 16));
         const blockSizeInBytes = keyStream.length;
-        return createRawData(image.map((value, i) => value ^ keyStream[i % blockSizeInBytes]));
+        return createRawData(image.map((value, i) => { var _a; return value ^ ((_a = keyStream[i % blockSizeInBytes]) !== null && _a !== void 0 ? _a : 0); }));
     }
 }
 exports.ImageInterceptor = ImageInterceptor;
