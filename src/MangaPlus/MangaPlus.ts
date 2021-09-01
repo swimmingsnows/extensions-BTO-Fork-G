@@ -144,7 +144,7 @@ export class MangaPlus extends Source {
             })
         }
         catch (error: any) {
-            console.log(error)
+            console.log(error.message)
             throw new Error(error.message)
         }
     }
@@ -175,27 +175,33 @@ export class MangaPlus extends Source {
             })
         }
 
-        const request = createRequestObject({
-            url: `${API_DOMAIN}/title_list/allV2`,
-            method: 'GET',
-            headers: {
-                referer: `${MANGAPLUS_DOMAIN}/manga_list/all`
-            }
-        })
+        try{
+            const request = createRequestObject({
+                url: `${API_DOMAIN}/title_list/allV2`,
+                method: 'GET',
+                headers: {
+                    referer: `${MANGAPLUS_DOMAIN}/manga_list/all`
+                }
+            })
 
-        const response = await this.requestManager.schedule(request, 1)
+            const response = await this.requestManager.schedule(request, 1)
 
-        const data = createByteArray(response.rawData)
-        const results = this.parser.parseSearchResults(
-            data,
-            await getLanguages(this.stateManager),
-            query
-        ).slice(offset, offset + 100)
+            const data = createByteArray(response.rawData)
+            const results = this.parser.parseSearchResults(
+                data,
+                await getLanguages(this.stateManager),
+                query
+            ).slice(offset, offset + 100)
 
-        return createPagedResults({
-            results,
-            metadata: { offset: offset + 100 }
-        })
+            return createPagedResults({
+                results,
+                metadata: { offset: offset + 100 }
+            })
+        }
+        catch (error: any) {
+            console.log(error.message)
+            throw new Error(error.message)
+        }
     }
 
     override async getHomePageSections(

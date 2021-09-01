@@ -12,7 +12,6 @@ export class ThumbnailInterceptor implements RequestInterceptor {
         requestsPerSecond: 5,
         requestTimeout: 20000,
     })
-    stateManager = createSourceStateManager({})
 
     async interceptRequest(request: Request): Promise<Request> {
         return request
