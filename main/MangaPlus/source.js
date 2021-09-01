@@ -8078,7 +8078,7 @@ class MangaPlus extends paperback_extensions_common_1.Source {
                 });
             }
             catch (error) {
-                console.log(error);
+                console.log(error.message);
                 throw new Error(error.message);
             }
         });
@@ -8103,20 +8103,26 @@ class MangaPlus extends paperback_extensions_common_1.Source {
                     ]
                 });
             }
-            const request = createRequestObject({
-                url: `${MangaPlusHelper_1.API_DOMAIN}/title_list/allV2`,
-                method: 'GET',
-                headers: {
-                    referer: `${MangaPlusHelper_1.MANGAPLUS_DOMAIN}/manga_list/all`
-                }
-            });
-            const response = yield this.requestManager.schedule(request, 1);
-            const data = createByteArray(response.rawData);
-            const results = this.parser.parseSearchResults(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager), query).slice(offset, offset + 100);
-            return createPagedResults({
-                results,
-                metadata: { offset: offset + 100 }
-            });
+            try {
+                const request = createRequestObject({
+                    url: `${MangaPlusHelper_1.API_DOMAIN}/title_list/allV2`,
+                    method: 'GET',
+                    headers: {
+                        referer: `${MangaPlusHelper_1.MANGAPLUS_DOMAIN}/manga_list/all`
+                    }
+                });
+                const response = yield this.requestManager.schedule(request, 1);
+                const data = createByteArray(response.rawData);
+                const results = this.parser.parseSearchResults(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager), query).slice(offset, offset + 100);
+                return createPagedResults({
+                    results,
+                    metadata: { offset: offset + 100 }
+                });
+            }
+            catch (error) {
+                console.log(error.message);
+                throw new Error(error.message);
+            }
         });
     }
     getHomePageSections(sectionCallback) {
@@ -8740,7 +8746,6 @@ class ThumbnailInterceptor {
             requestsPerSecond: 5,
             requestTimeout: 20000,
         });
-        this.stateManager = createSourceStateManager({});
     }
     interceptRequest(request) {
         return __awaiter(this, void 0, void 0, function* () {
