@@ -8086,24 +8086,24 @@ class MangaPlus extends paperback_extensions_common_1.Source {
     getSearchResults(query, metadata) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            const offset = (_a = metadata === null || metadata === void 0 ? void 0 : metadata.offset) !== null && _a !== void 0 ? _a : 0;
-            let id;
-            if (query.parameters && query.parameters['id'] && query.parameters['id'][0]) {
-                id = query.parameters['id'][0].match(MangaPlusHelper_1.ID_REGEX);
-            }
-            if (id && id[0]) {
-                const manga = yield this.getMangaDetails(id[0]);
-                return createPagedResults({
-                    results: [
-                        createMangaTile({
-                            id: `${id[0]}`,
-                            image: manga.image,
-                            title: createIconText({ text: (_b = manga.titles[0]) !== null && _b !== void 0 ? _b : '' })
-                        })
-                    ]
-                });
-            }
             try {
+                const offset = (_a = metadata === null || metadata === void 0 ? void 0 : metadata.offset) !== null && _a !== void 0 ? _a : 0;
+                let id;
+                if (query.parameters && query.parameters['id'] && query.parameters['id'][0]) {
+                    id = query.parameters['id'][0].match(MangaPlusHelper_1.ID_REGEX);
+                }
+                if (id && id[0]) {
+                    const manga = yield this.getMangaDetails(id[0]);
+                    return createPagedResults({
+                        results: [
+                            createMangaTile({
+                                id: `${id[0]}`,
+                                image: manga.image,
+                                title: createIconText({ text: (_b = manga.titles[0]) !== null && _b !== void 0 ? _b : '' })
+                            })
+                        ]
+                    });
+                }
                 const request = createRequestObject({
                     url: `${MangaPlusHelper_1.API_DOMAIN}/title_list/allV2`,
                     method: 'GET',
@@ -8178,38 +8178,44 @@ class MangaPlus extends paperback_extensions_common_1.Source {
     getViewMoreItems(homepageSectionId, metadata) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            const offset = (_a = metadata === null || metadata === void 0 ? void 0 : metadata.offset) !== null && _a !== void 0 ? _a : 0;
-            let results;
-            let requests;
-            switch (homepageSectionId) {
-                case 'popular': {
-                    requests = [createRequestObject(MangaPlusHelper_1.PopularRequest)];
-                    const responses = yield Promise.all(requests.map((request) => this.requestManager.schedule(request, 1)));
-                    const data = responses.map((response) => createByteArray(response.rawData));
-                    results = this.parser
-                        .parsePopularSection(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager))
-                        .slice(offset, offset + 100);
-                    break;
+            try {
+                const offset = (_a = metadata === null || metadata === void 0 ? void 0 : metadata.offset) !== null && _a !== void 0 ? _a : 0;
+                let results;
+                let requests;
+                switch (homepageSectionId) {
+                    case 'popular': {
+                        requests = [createRequestObject(MangaPlusHelper_1.PopularRequest)];
+                        const responses = yield Promise.all(requests.map((request) => this.requestManager.schedule(request, 1)));
+                        const data = responses.map((response) => createByteArray(response.rawData));
+                        results = this.parser
+                            .parsePopularSection(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager))
+                            .slice(offset, offset + 100);
+                        break;
+                    }
+                    case 'latest': {
+                        requests = [
+                            createRequestObject(MangaPlusHelper_1.LatestRequest),
+                            createRequestObject(MangaPlusHelper_1.PopularRequest)
+                        ];
+                        const responses = yield Promise.all(requests.map((request) => this.requestManager.schedule(request, 1)));
+                        const data = responses.map((response) => createByteArray(response.rawData));
+                        results = this.parser
+                            .parseRecentUpdatesSection(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager))
+                            .slice(offset, offset + 100);
+                        break;
+                    }
+                    default:
+                        return Promise.resolve(createPagedResults({ results: [] }));
                 }
-                case 'latest': {
-                    requests = [
-                        createRequestObject(MangaPlusHelper_1.LatestRequest),
-                        createRequestObject(MangaPlusHelper_1.PopularRequest)
-                    ];
-                    const responses = yield Promise.all(requests.map((request) => this.requestManager.schedule(request, 1)));
-                    const data = responses.map((response) => createByteArray(response.rawData));
-                    results = this.parser
-                        .parseRecentUpdatesSection(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager))
-                        .slice(offset, offset + 100);
-                    break;
-                }
-                default:
-                    return Promise.resolve(createPagedResults({ results: [] }));
+                return createPagedResults({
+                    results,
+                    metadata: { offset: offset + 100 }
+                });
             }
-            return createPagedResults({
-                results,
-                metadata: { offset: offset + 100 }
-            });
+            catch (error) {
+                console.log(error.message);
+                throw new Error(error.message);
+            }
         });
     }
     getSourceMenu() {
