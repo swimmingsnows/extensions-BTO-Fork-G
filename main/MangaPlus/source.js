@@ -8506,13 +8506,14 @@ class Parser {
         }
     }
     parseSearchResults(data, languages, query) {
+        var _a;
         const result = APIInterface_1.MangaPlusResponse.decode(data);
         if (result.success == null) {
             throw new Error('Invalid response from server');
         }
         if (result.success.titleDetailView != null) {
             const title = result.success.titleDetailView.title;
-            if (languages.includes(MangaPlusHelper_1.LangCode[title.language])) {
+            if (MangaPlusHelper_1.LangCode[title.language] && languages.includes((_a = MangaPlusHelper_1.LangCode[title.language]) !== null && _a !== void 0 ? _a : 'unknown')) {
                 return [
                     createMangaTile({
                         id: `${title.titleId}`,
@@ -8525,7 +8526,7 @@ class Parser {
         }
         MangaPlusHelper_1.TitleList.set(result.success.allTitlesViewV2.allTitlesGroup
             .flatMap((allTitlesGroup) => allTitlesGroup.titles)
-            .filter((title) => languages.includes(MangaPlusHelper_1.LangCode[title.language])));
+            .filter((title) => { var _a; return languages.includes((_a = MangaPlusHelper_1.LangCode[title.language]) !== null && _a !== void 0 ? _a : 'unknown'); }));
         return MangaPlusHelper_1.TitleList.get()
             .filter((title) => {
             if (query.title && query.parameters['author'] && query.parameters['author'][0]) {
@@ -8545,6 +8546,8 @@ class Parser {
                     .toLowerCase()
                     .includes(query.parameters['author'][0].toLowerCase());
             }
+            else
+                return false;
         })
             .map((title) => createMangaTile({
             id: `${title.titleId}`,
@@ -8553,11 +8556,12 @@ class Parser {
         }));
     }
     parsePopularSection(data, languages) {
-        const result = APIInterface_1.MangaPlusResponse.decode(data[0]);
+        var _a;
+        const result = APIInterface_1.MangaPlusResponse.decode((_a = data[0]) !== null && _a !== void 0 ? _a : new Uint8Array(0));
         if (result.success == null) {
             throw new Error('Invalid response from server');
         }
-        MangaPlusHelper_1.TitleList.set(result.success.titleRankingView.titles.filter((title) => languages.includes(MangaPlusHelper_1.LangCode[title.language])));
+        MangaPlusHelper_1.TitleList.set(result.success.titleRankingView.titles.filter((title) => { var _a; return languages.includes((_a = MangaPlusHelper_1.LangCode[title.language]) !== null && _a !== void 0 ? _a : 'unknown'); }));
         const titleList = MangaPlusHelper_1.TitleList.get();
         return titleList.map((title) => createMangaTile({
             id: `${title.titleId}`,
@@ -8566,20 +8570,21 @@ class Parser {
         }));
     }
     parseRecentUpdatesSection(data, languages) {
-        const result = APIInterface_1.MangaPlusResponse.decode(data[0]);
+        var _a, _b;
+        const result = APIInterface_1.MangaPlusResponse.decode((_a = data[0]) !== null && _a !== void 0 ? _a : new Uint8Array(0));
         if (result.success == null) {
             throw new Error('Invalid response from server');
         }
         // Fetch all titles to get newer thumbnail urls at the interceptor.
-        const popularResult = APIInterface_1.MangaPlusResponse.decode(data[1]);
+        const popularResult = APIInterface_1.MangaPlusResponse.decode((_b = data[1]) !== null && _b !== void 0 ? _b : new Uint8Array(0));
         if (popularResult.success != null) {
-            MangaPlusHelper_1.TitleList.set(popularResult.success.titleRankingView.titles.filter((title) => languages.includes(MangaPlusHelper_1.LangCode[title.language])));
+            MangaPlusHelper_1.TitleList.set(popularResult.success.titleRankingView.titles.filter((title) => { var _a; return languages.includes((_a = MangaPlusHelper_1.LangCode[title.language]) !== null && _a !== void 0 ? _a : 'unknown'); }));
         }
         const mangas = result.success.webHomeViewV3.groups
             .flatMap((group) => group.titleGroups)
             .flatMap((titleGroup) => titleGroup.titles)
             .map((title) => title.title)
-            .filter((title) => languages.includes(MangaPlusHelper_1.LangCode[title.language]))
+            .filter((title) => { var _a; return languages.includes((_a = MangaPlusHelper_1.LangCode[title.language]) !== null && _a !== void 0 ? _a : 'unknown'); })
             .map((title) => createMangaTile({
             id: `${title.titleId}`,
             image: title.portraitImageUrl,
