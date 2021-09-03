@@ -61,7 +61,7 @@ describe('MangaPlus Tests', () => {
     it('Testing search', async () => {
         const testSearch: SearchRequest = {
             title: 'My Hero Academia',
-            parameters: {'Author': ['Masashi']}
+            parameters: {}
         }
 
         const search = await wrapper.searchRequest(source, testSearch, 1)
