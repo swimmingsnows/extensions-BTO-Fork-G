@@ -8561,7 +8561,7 @@ class Parser {
     }
     filterSearchTitles(title, query) {
         var _a;
-        if (query.title.trim().length > 0 && query.parameters && query.parameters['author'] && query.parameters['author'][0]) {
+        if (query.title.trim().length > 0 && typeof query.parameters !== 'undefined' && typeof query.parameters['author'] !== 'undefined' && typeof query.parameters['author'][0] !== 'undefined') {
             return (title.name.toLowerCase()
                 .includes(query.title.toLowerCase()) &&
                 title.author
@@ -8569,7 +8569,7 @@ class Parser {
                     .includes(query.parameters['author'][0].toLowerCase()));
         }
         else {
-            if (query.parameters && query.parameters['author'] && query.parameters['author'][0]) {
+            if (typeof query.parameters !== 'undefined' && typeof query.parameters['author'] !== 'undefined' && typeof query.parameters['author'][0] !== 'undefined') {
                 return title.name
                     .toLowerCase()
                     .includes(query.title.toLowerCase()) ||
