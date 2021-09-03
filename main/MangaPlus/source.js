@@ -8560,8 +8560,8 @@ class Parser {
         }
     }
     filterSearchTitles(title, query) {
-        var _a;
-        if (query.title.trim().length > 0 && typeof query.parameters !== 'undefined' && typeof query.parameters['author'] !== 'undefined' && typeof query.parameters['author'][0] !== 'undefined') {
+        var _a, _b, _c, _d, _e, _f, _g;
+        if (query.title.trim().length > 0 && ((_b = (_a = query.parameters) === null || _a === void 0 ? void 0 : _a['author']) === null || _b === void 0 ? void 0 : _b[0])) {
             return (title.name.toLowerCase()
                 .includes(query.title.toLowerCase()) &&
                 title.author
@@ -8569,13 +8569,13 @@ class Parser {
                     .includes(query.parameters['author'][0].toLowerCase()));
         }
         else {
-            if (typeof query.parameters !== 'undefined' && typeof query.parameters['author'] !== 'undefined' && typeof query.parameters['author'][0] !== 'undefined') {
+            if ((_d = (_c = query.parameters) === null || _c === void 0 ? void 0 : _c['author']) === null || _d === void 0 ? void 0 : _d[0]) {
                 return title.name
                     .toLowerCase()
                     .includes(query.title.toLowerCase()) ||
                     title.author
                         .toLowerCase()
-                        .includes((_a = query.parameters['author'][0]) === null || _a === void 0 ? void 0 : _a.toLowerCase());
+                        .includes((_g = (_f = (_e = query.parameters) === null || _e === void 0 ? void 0 : _e['author']) === null || _f === void 0 ? void 0 : _f[0]) === null || _g === void 0 ? void 0 : _g.toLowerCase());
             }
             else
                 return false;
