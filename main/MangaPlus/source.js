@@ -8440,6 +8440,10 @@ exports.resetSettings = resetSettings;
 
 },{"./MangaPlusHelper":90}],93:[function(require,module,exports){
 "use strict";
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable no-case-declarations */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
 const paperback_extensions_common_1 = require("paperback-extensions-common");
@@ -8479,7 +8483,7 @@ class Parser {
             const chapters = details.firstChapterList.concat(details.lastChapterList);
             return (chapters
                 .reverse()
-                // If the subTitle is null, then the chapter time expired.
+                // If subTitle is null, then the chapter time has expired
                 .filter((chapter) => chapter.subTitle != null)
                 .map((chapter) => createChapter({
                 mangaId,
@@ -8519,59 +8523,71 @@ class Parser {
     }
     parseSearchResults(data, languages, query) {
         var _a;
-        const result = APIInterface_1.MangaPlusResponse.decode(data);
-        if (result.success == null) {
-            throw new Error('Invalid response from server');
-        }
-        if (result.success.titleDetailView != null) {
-            const title = result.success.titleDetailView.title;
-            if (MangaPlusHelper_1.LangCode[title.language] && languages.includes((_a = MangaPlusHelper_1.LangCode[title.language]) !== null && _a !== void 0 ? _a : 'unknown')) {
-                return [
-                    createMangaTile({
-                        id: `${title.titleId}`,
-                        image: title.portraitImageUrl,
-                        title: createIconText({ text: title.name })
-                    })
-                ];
+        try {
+            const result = APIInterface_1.MangaPlusResponse.decode(data);
+            if (result.success == null) {
+                const error = result.error.englishPopup.body;
+                console.log(error);
+                throw new Error(error);
             }
-            return [];
-        }
-        MangaPlusHelper_1.TitleList.set(result.success.allTitlesViewV2.allTitlesGroup
-            .flatMap((allTitlesGroup) => allTitlesGroup.titles)
-            .filter((title) => { var _a; return languages.includes((_a = MangaPlusHelper_1.LangCode[title.language]) !== null && _a !== void 0 ? _a : 'unknown'); }));
-        return MangaPlusHelper_1.TitleList.get()
-            .filter((title) => {
-            if (query.title && query.parameters['author'] && query.parameters['author'][0]) {
-                return (title.name.toLowerCase()
-                    .includes(query.title.toLowerCase()) &&
-                    title.author
-                        .toLowerCase()
-                        .includes(query.parameters['author'][0].toLowerCase()));
+            if (result.success.titleDetailView != null) {
+                const title = result.success.titleDetailView.title;
+                if (MangaPlusHelper_1.LangCode[title.language] && languages.includes((_a = MangaPlusHelper_1.LangCode[title.language]) !== null && _a !== void 0 ? _a : 'unknown')) {
+                    return [
+                        createMangaTile({
+                            id: `${title.titleId}`,
+                            image: title.portraitImageUrl,
+                            title: createIconText({ text: title.name })
+                        })
+                    ];
+                }
+                return [];
             }
-            else if (query.title) {
+            MangaPlusHelper_1.TitleList.set(result.success.allTitlesViewV2.allTitlesGroup
+                .flatMap((allTitlesGroup) => allTitlesGroup.titles)
+                .filter((title) => { var _a; return languages.includes((_a = MangaPlusHelper_1.LangCode[title.language]) !== null && _a !== void 0 ? _a : 'unknown'); }));
+            return MangaPlusHelper_1.TitleList.get()
+                .filter(title => this.filterSearchTitles(title, query))
+                .map((title) => createMangaTile({
+                id: `${title.titleId}`,
+                image: title.portraitImageUrl,
+                title: createIconText({ text: title.name })
+            }));
+        }
+        catch (error) {
+            console.log(error.message);
+            throw new Error(error.message);
+        }
+    }
+    filterSearchTitles(title, query) {
+        var _a;
+        if (query.title.trim().length > 0 && query.parameters['author'] && query.parameters['author'][0]) {
+            return (title.name.toLowerCase()
+                .includes(query.title.toLowerCase()) &&
+                title.author
+                    .toLowerCase()
+                    .includes(query.parameters['author'][0].toLowerCase()));
+        }
+        else {
+            if (query.parameters['author'] && query.parameters['author'][0]) {
                 return title.name
                     .toLowerCase()
-                    .includes(query.title.toLowerCase());
-            }
-            else if (query.parameters['author'] && query.parameters['author'][0]) {
-                return title.author
-                    .toLowerCase()
-                    .includes(query.parameters['author'][0].toLowerCase());
+                    .includes(query.title.toLowerCase()) ||
+                    title.author
+                        .toLowerCase()
+                        .includes((_a = query.parameters['author'][0]) === null || _a === void 0 ? void 0 : _a.toLowerCase());
             }
             else
                 return false;
-        })
-            .map((title) => createMangaTile({
-            id: `${title.titleId}`,
-            image: title.portraitImageUrl,
-            title: createIconText({ text: title.name })
-        }));
+        }
     }
     parsePopularSection(data, languages) {
         var _a;
         const result = APIInterface_1.MangaPlusResponse.decode((_a = data[0]) !== null && _a !== void 0 ? _a : new Uint8Array(0));
         if (result.success == null) {
-            throw new Error('Invalid response from server');
+            const error = result.error.englishPopup.body;
+            console.log(error);
+            throw new Error(error);
         }
         MangaPlusHelper_1.TitleList.set(result.success.titleRankingView.titles.filter((title) => { var _a; return languages.includes((_a = MangaPlusHelper_1.LangCode[title.language]) !== null && _a !== void 0 ? _a : 'unknown'); }));
         const titleList = MangaPlusHelper_1.TitleList.get();
@@ -8585,7 +8601,9 @@ class Parser {
         var _a, _b;
         const result = APIInterface_1.MangaPlusResponse.decode((_a = data[0]) !== null && _a !== void 0 ? _a : new Uint8Array(0));
         if (result.success == null) {
-            throw new Error('Invalid response from server');
+            const error = result.error.englishPopup.body;
+            console.log(error);
+            throw new Error(error);
         }
         // Fetch all titles to get newer thumbnail urls at the interceptor.
         const popularResult = APIInterface_1.MangaPlusResponse.decode((_b = data[1]) !== null && _b !== void 0 ? _b : new Uint8Array(0));
