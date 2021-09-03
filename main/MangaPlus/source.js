@@ -8569,13 +8569,14 @@ class Parser {
                     .includes((_e = (_d = (_c = query.parameters) === null || _c === void 0 ? void 0 : _c['author']) === null || _d === void 0 ? void 0 : _d[0]) === null || _e === void 0 ? void 0 : _e.toLowerCase()));
         }
         else {
-            return title.name
-                .toLowerCase()
-                .includes(query.title.toLowerCase()) ||
-                (typeof ((_g = (_f = query.parameters) === null || _f === void 0 ? void 0 : _f['author']) === null || _g === void 0 ? void 0 : _g[0]) !== 'undefined' &&
-                    title.author
+            return (typeof ((_g = (_f = query.parameters) === null || _f === void 0 ? void 0 : _f['author']) === null || _g === void 0 ? void 0 : _g[0]) !== 'undefined' &&
+                title.author
+                    .toLowerCase()
+                    .includes((_k = (_j = (_h = query.parameters) === null || _h === void 0 ? void 0 : _h['author']) === null || _j === void 0 ? void 0 : _j[0]) === null || _k === void 0 ? void 0 : _k.toLowerCase())) ||
+                (query.title.trim().length > 0 &&
+                    title.name
                         .toLowerCase()
-                        .includes((_k = (_j = (_h = query.parameters) === null || _h === void 0 ? void 0 : _h['author']) === null || _j === void 0 ? void 0 : _j[0]) === null || _k === void 0 ? void 0 : _k.toLowerCase()));
+                        .includes(query.title.toLowerCase()));
         }
     }
     parsePopularSection(data, languages) {
