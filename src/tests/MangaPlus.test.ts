@@ -49,9 +49,7 @@ describe('MangaPlus Tests', () => {
     it('Get Chapter Details', async () => {
         const chapters = await wrapper.getChapters(source, mangaId)
         const chapter = chapters[0]
-        const data = await wrapper.getChapterDetails(source, mangaId, chapters[0]?.id ?? 'unknown')
-        console.log(chapter)
-        console.log(data.pages.length)
+        const data = await wrapper.getChapterDetails(source, mangaId, chapter?.id ?? 'unknown')
         expect(data, 'No server response').to.exist
         expect(data, 'Empty server response').to.not.be.empty
 
@@ -63,7 +61,7 @@ describe('MangaPlus Tests', () => {
     it('Testing search', async () => {
         const testSearch: SearchRequest = {
             title: 'My Hero Academia',
-            parameters: {}
+            parameters: {'Author': ['Masashi']}
         }
 
         const search = await wrapper.searchRequest(source, testSearch, 1)

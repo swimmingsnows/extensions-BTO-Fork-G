@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable no-case-declarations */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import {
     Chapter,
     LanguageCode,
@@ -6,7 +11,8 @@ import {
     MangaTile,
     SearchRequest
 } from 'paperback-extensions-common'
-import { MangaPlusResponse } from './APIInterface'
+import {MangaPlusResponse,
+    Title} from './APIInterface'
 import { COMPLETE_REGEX,
     LangCode,
     TitleList } from './MangaPlusHelper'
@@ -56,7 +62,7 @@ export class Parser {
             return (
                 chapters
                     .reverse()
-                // If the subTitle is null, then the chapter time expired.
+                    // If subTitle is null, then the chapter time has expired
                     .filter((chapter) => chapter.subTitle != null)
                     .map((chapter) =>
                         createChapter({
@@ -105,72 +111,84 @@ export class Parser {
         languages: string[],
         query: SearchRequest
     ): MangaTile[] {
-        const result = MangaPlusResponse.decode(data)
+        try {
+            const result = MangaPlusResponse.decode(data)
 
-        if (result.success == null) {
-            throw new Error('Invalid response from server')
-        }
+            if (result.success == null) {
+                const error = result.error.englishPopup.body
+                console.log(error)
+                throw new Error(error)
+            }
 
-        if (result.success.titleDetailView != null) {
-            const title = result.success.titleDetailView.title
+            if (result.success.titleDetailView != null) {
+                const title = result.success.titleDetailView.title
 
-            if (LangCode[title.language] && languages.includes(LangCode[title.language] ?? 'unknown')) {
-                return [
+                if (LangCode[title.language] && languages.includes(LangCode[title.language] ?? 'unknown')) {
+                    return [
+                        createMangaTile({
+                            id: `${title.titleId}`,
+                            image: title.portraitImageUrl,
+                            title: createIconText({ text: title.name })
+                        })
+                    ]
+                }
+                return []
+            }
+            TitleList.set(
+                result.success.allTitlesViewV2.allTitlesGroup
+                    .flatMap((allTitlesGroup) => allTitlesGroup.titles)
+                    .filter((title) =>
+                        languages.includes(LangCode[title.language] ?? 'unknown')
+                    )
+            )
+
+            return TitleList.get()
+                .filter(title => this.filterSearchTitles(title, query))
+                .map((title) =>
                     createMangaTile({
                         id: `${title.titleId}`,
                         image: title.portraitImageUrl,
                         title: createIconText({ text: title.name })
                     })
-                ]
-            }
-            return []
-        }
-        TitleList.set(
-            result.success.allTitlesViewV2.allTitlesGroup
-                .flatMap((allTitlesGroup) => allTitlesGroup.titles)
-                .filter((title) =>
-                    languages.includes(LangCode[title.language] ?? 'unknown')
                 )
-        )
+        } catch (error: any) {
+            console.log(error.message)
+            throw new Error(error.message)
+        }
+    }
 
-        return TitleList.get()
-            .filter((title) => {
-                if (query.title && query.parameters['author'] && query.parameters['author'][0]) {
-                    return (
-                        title.name.toLowerCase()
-                            .includes(query.title.toLowerCase()) &&
-              title.author
-                  .toLowerCase()
-                  .includes(query.parameters['author'][0].toLowerCase())
-                    )
-                }
-                else if (query.title) {
-                    return title.name
-                        .toLowerCase()
-                        .includes(query.title.toLowerCase())
-                }
-                else if (query.parameters['author'] && query.parameters['author'][0]) {
-                    return title.author
+    filterSearchTitles(title: Title, query: SearchRequest): boolean {
+        if (query.title!.trim().length > 0 && query.parameters['author'] && query.parameters['author'][0]) {
+            return (
+                title.name.toLowerCase()
+                    .includes(query.title!.toLowerCase()) &&
+                    title.author
                         .toLowerCase()
                         .includes(query.parameters['author'][0].toLowerCase())
-                }
-                else return false
-            })
-            .map((title) =>
-                createMangaTile({
-                    id: `${title.titleId}`,
-                    image: title.portraitImageUrl,
-                    title: createIconText({ text: title.name })
-                })
             )
+        }
+        else {
+            if (query.parameters['author'] && query.parameters['author'][0]){
+                return title.name
+                    .toLowerCase()
+                    .includes(query.title!.toLowerCase()) ||
+                    title.author
+                        .toLowerCase()
+                        .includes(query.parameters['author'][0]?.toLowerCase())
+            }
+            else return false
+        }
     }
 
     parsePopularSection(data: Uint8Array[], languages: string[]): MangaTile[] {
         const result = MangaPlusResponse.decode(data[0] ?? new Uint8Array(0))
 
         if (result.success == null) {
-            throw new Error('Invalid response from server')
+            const error = result.error.englishPopup.body
+            console.log(error)
+            throw new Error(error)
         }
+
         TitleList.set(
             result.success.titleRankingView.titles.filter((title) =>
                 languages.includes(LangCode[title.language] ?? 'unknown')
@@ -194,7 +212,9 @@ export class Parser {
         const result = MangaPlusResponse.decode(data[0] ?? new Uint8Array(0))
 
         if (result.success == null) {
-            throw new Error('Invalid response from server')
+            const error = result.error.englishPopup.body
+            console.log(error)
+            throw new Error(error)
         }
 
         // Fetch all titles to get newer thumbnail urls at the interceptor.
