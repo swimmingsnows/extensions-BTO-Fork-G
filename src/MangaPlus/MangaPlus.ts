@@ -48,7 +48,7 @@ export const MangaPlusInfo: SourceInfo = {
     author: 'GameFuzzy',
     authorWebsite: 'https://github.com/gamefuzzy',
     icon: 'icon.png',
-    contentRating: ContentRating.EVERYONE,
+    contentRating: ContentRating.MATURE,
     websiteBaseURL: MANGAPLUS_DOMAIN,
     sourceTags: [
         {
