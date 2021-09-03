@@ -164,7 +164,7 @@ export class Parser {
                     .includes(query.title!.toLowerCase()) &&
                     title.author
                         .toLowerCase()
-                        .includes(query.parameters['author'][0].toLowerCase())
+                        .includes(query.parameters?.['author']?.[0]?.toLowerCase())
             )
         }
         else {
