@@ -168,13 +168,14 @@ export class Parser {
             )
         }
         else {
-            return title.name
-                .toLowerCase()
-                .includes(query.title!.toLowerCase()) ||
-                (typeof query.parameters?.['author']?.[0] !== 'undefined' &&
-                    title.author
-                        .toLowerCase()
-                        .includes(query.parameters?.['author']?.[0]?.toLowerCase()))
+            return (typeof query.parameters?.['author']?.[0] !== 'undefined' &&
+                title.author
+                    .toLowerCase()
+                    .includes(query.parameters?.['author']?.[0]?.toLowerCase())) ||
+                (query.title!.trim().length > 0 &&
+                title.name
+                    .toLowerCase()
+                    .includes(query.title!.toLowerCase()))
         }
     }
 
