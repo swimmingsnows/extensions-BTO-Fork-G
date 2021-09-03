@@ -50,12 +50,7 @@ export const MangaPlusInfo: SourceInfo = {
     icon: 'icon.png',
     contentRating: ContentRating.MATURE,
     websiteBaseURL: MANGAPLUS_DOMAIN,
-    sourceTags: [
-        {
-            text: 'Notifications',
-            type: TagType.GREEN
-        }
-    ]
+    sourceTags: []
 }
 
 export class MangaPlus extends Source {
