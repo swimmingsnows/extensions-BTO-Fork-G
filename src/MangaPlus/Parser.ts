@@ -158,7 +158,7 @@ export class Parser {
     }
 
     filterSearchTitles(title: Title, query: SearchRequest): boolean {
-        if (query.title!.trim().length > 0 && typeof query.parameters['author'] != 'undefined' && typeof query.parameters['author'][0] != 'undefined') {
+        if (query.title!.trim().length > 0 && query.parameters && query.parameters['author'] && query.parameters['author'][0]) {
             return (
                 title.name.toLowerCase()
                     .includes(query.title!.toLowerCase()) &&
@@ -168,7 +168,7 @@ export class Parser {
             )
         }
         else {
-            if (typeof query.parameters['author'] != 'undefined' && typeof query.parameters['author'][0] != 'undefined'){
+            if (query.parameters && query.parameters['author'] && query.parameters['author'][0]){
                 return title.name
                     .toLowerCase()
                     .includes(query.title!.toLowerCase()) ||
