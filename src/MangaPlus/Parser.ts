@@ -174,7 +174,7 @@ export class Parser {
                 (typeof query.parameters?.['author']?.[0] !== 'undefined' &&
                     title.author
                         .toLowerCase()
-                        .includes(query.parameters?.['author']?.[0]?.toLowerCase() ?? 'UNKNOWN'))
+                        .includes(query.parameters?.['author']?.[0]?.toLowerCase()))
         }
     }
 
