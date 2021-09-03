@@ -8000,7 +8000,7 @@ exports.MangaPlusInfo = {
     author: 'GameFuzzy',
     authorWebsite: 'https://github.com/gamefuzzy',
     icon: 'icon.png',
-    contentRating: paperback_extensions_common_1.ContentRating.EVERYONE,
+    contentRating: paperback_extensions_common_1.ContentRating.MATURE,
     websiteBaseURL: MangaPlusHelper_1.MANGAPLUS_DOMAIN,
     sourceTags: [
         {
