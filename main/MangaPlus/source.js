@@ -8002,12 +8002,7 @@ exports.MangaPlusInfo = {
     icon: 'icon.png',
     contentRating: paperback_extensions_common_1.ContentRating.MATURE,
     websiteBaseURL: MangaPlusHelper_1.MANGAPLUS_DOMAIN,
-    sourceTags: [
-        {
-            text: 'Notifications',
-            type: paperback_extensions_common_1.TagType.GREEN
-        }
-    ]
+    sourceTags: []
 };
 class MangaPlus extends paperback_extensions_common_1.Source {
     constructor() {
