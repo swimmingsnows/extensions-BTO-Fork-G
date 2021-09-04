@@ -612,7 +612,7 @@ const paperback_extensions_common_1 = require("paperback-extensions-common");
 const Parser_1 = require("./Parser");
 const MANGAPILL_DOMAIN = 'https://www.mangapill.com';
 exports.MangaPillInfo = {
-    version: '2.0.1',
+    version: '2.0.2',
     name: 'MangaPill',
     description: 'Extension that pulls manga from mangapill.com. It has a lot of officially translated manga but can sometimes miss manga notifications',
     author: 'GameFuzzy',
@@ -985,25 +985,25 @@ class Parser {
     parseTags($) {
         var _a, _b, _c, _d, _e, _f;
         const tagSections = [createTagSection({ id: '0', label: 'Genres', tags: [] }),
-            createTagSection({ id: '1', label: 'Format', tags: [] })];
+            createTagSection({ id: '1', label: 'Format', tags: [] }), createTagSection({ id: '2', label: 'Status', tags: [] })];
         for (const obj of $('.grid.gap-1 label').toArray()) {
-            const genre = $(obj).text().trim();
-            const id = (_a = '&genre=' + $('input', $(obj)).attr('value')) !== null && _a !== void 0 ? _a : genre;
-            (_b = tagSections[0]) === null || _b === void 0 ? void 0 : _b.tags.push(createTag({ id: id, label: genre }));
+            const label = $(obj).text().trim();
+            const id = (_a = '&genre=' + $('input', $(obj)).attr('value')) !== null && _a !== void 0 ? _a : label;
+            (_b = tagSections[0]) === null || _b === void 0 ? void 0 : _b.tags.push(createTag({ id, label }));
         }
         for (const obj of $('select#type option:not([value=""])').toArray()) {
-            let genre = $(obj).text().trim();
+            let label = $(obj).text().trim();
             // Capitalize first letter
-            genre = genre.charAt(0).toUpperCase() + genre.slice(1);
-            const id = (_c = '&type=' + $(obj).attr('value')) !== null && _c !== void 0 ? _c : genre;
-            (_d = tagSections[1]) === null || _d === void 0 ? void 0 : _d.tags.push(createTag({ id: id, label: genre }));
+            label = label.charAt(0).toUpperCase() + label.slice(1);
+            const id = (_c = '&type=' + $(obj).attr('value')) !== null && _c !== void 0 ? _c : label;
+            (_d = tagSections[1]) === null || _d === void 0 ? void 0 : _d.tags.push(createTag({ id, label }));
         }
         for (const obj of $('select#status option:not([value=""])').toArray()) {
-            let genre = $(obj).text().trim();
+            let label = $(obj).text().trim();
             // Capitalize first letter
-            genre = genre.charAt(0).toUpperCase() + genre.slice(1);
-            const id = (_e = '&status=' + $(obj).attr('value')) !== null && _e !== void 0 ? _e : genre;
-            (_f = tagSections[1]) === null || _f === void 0 ? void 0 : _f.tags.push(createTag({ id: id, label: genre }));
+            label = label.charAt(0).toUpperCase() + label.slice(1);
+            const id = (_e = '&status=' + $(obj).attr('value')) !== null && _e !== void 0 ? _e : label;
+            (_f = tagSections[2]) === null || _f === void 0 ? void 0 : _f.tags.push(createTag({ id, label }));
         }
         return tagSections;
     }
