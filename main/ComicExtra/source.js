@@ -392,7 +392,7 @@ const paperback_extensions_common_1 = require("paperback-extensions-common");
 const Parser_1 = require("./Parser");
 const COMICEXTRA_DOMAIN = 'https://www.comicextra.com';
 exports.ComicExtraInfo = {
-    version: '2.0.0',
+    version: '2.0.1',
     name: 'ComicExtra',
     description: 'Extension that pulls western comics from comicextra.com',
     author: 'GameFuzzy',
@@ -543,17 +543,6 @@ class ComicExtra extends paperback_extensions_common_1.Source {
                 results: manga,
                 metadata: mData
             });
-        });
-    }
-    getTags() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const request = createRequestObject({
-                url: `${COMICEXTRA_DOMAIN}/comic-genres/`,
-                method: 'GET'
-            });
-            const data = yield this.requestManager.schedule(request, 1);
-            const $ = this.cheerio.load(data.data);
-            return this.parser.parseTags($);
         });
     }
     getHomePageSections(sectionCallback) {
@@ -821,18 +810,6 @@ class Parser {
             }
         }
         return mangaTiles;
-    }
-    parseTags($) {
-        var _a, _b, _c, _d;
-        const tagSections = [createTagSection({ id: '0', label: 'genres', tags: [] }),
-            createTagSection({ id: '1', label: 'format', tags: [] })];
-        for (const obj of $('a', $('.home-list')).toArray()) {
-            const id = (_b = (_a = $(obj).attr('href')) === null || _a === void 0 ? void 0 : _a.replace(`${COMICEXTRA_DOMAIN}/`, '').trim()) !== null && _b !== void 0 ? _b : $(obj).text().trim();
-            const genre = $(obj).text().trim();
-            (_c = tagSections[0]) === null || _c === void 0 ? void 0 : _c.tags.push(createTag({ id: id, label: genre }));
-        }
-        (_d = tagSections[1]) === null || _d === void 0 ? void 0 : _d.tags.push(createTag({ id: 'comic/', label: 'Comic' }));
-        return tagSections;
     }
     parseHomePageSection($) {
         var _a;

@@ -27051,7 +27051,7 @@ const paperback_extensions_common_1 = require("paperback-extensions-common");
 const Parser_1 = require("./Parser");
 const BATOTO_DOMAIN = 'https://bato.to';
 exports.BatoToInfo = {
-    version: '2.0.0',
+    version: '2.0.1',
     name: 'Bato.To',
     description: 'Extension that pulls western comics from bato.to',
     author: 'GameFuzzy',
@@ -27167,17 +27167,6 @@ class BatoTo extends paperback_extensions_common_1.Source {
                 results: manga,
                 metadata: mData
             });
-        });
-    }
-    getTags() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const request = createRequestObject({
-                url: `${BATOTO_DOMAIN}/browse`,
-                method: 'GET'
-            });
-            const data = yield this.requestManager.schedule(request, 1);
-            const $ = this.cheerio.load(data.data);
-            return this.parser.parseTags($);
         });
     }
     getHomePageSections(sectionCallback) {
@@ -27577,15 +27566,6 @@ class Parser {
             }
         }
         return mangaTiles;
-    }
-    parseTags($) {
-        var _a;
-        const tagSections = [createTagSection({ id: '0', label: 'genres', tags: [] })];
-        for (const obj of $('filter-item', $('.filter-items').first()).toArray()) {
-            const label = $('span', $(obj)).text().trim();
-            (_a = tagSections[0]) === null || _a === void 0 ? void 0 : _a.tags.push(createTag({ id: label, label: label }));
-        }
-        return tagSections;
     }
     parseHomePageSection($, source) {
         var _a, _b;

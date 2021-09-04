@@ -7994,7 +7994,7 @@ const Utility_1 = require("./Utility");
 const MangaPlusInterceptor_1 = require("./MangaPlusInterceptor");
 const interceptors_1 = require("./interceptors");
 exports.MangaPlusInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'MangaPlus',
     description: 'Extension that pulls licensed manga from MangaPlus.',
     author: 'GameFuzzy',
@@ -8002,7 +8002,12 @@ exports.MangaPlusInfo = {
     icon: 'icon.png',
     contentRating: paperback_extensions_common_1.ContentRating.MATURE,
     websiteBaseURL: MangaPlusHelper_1.MANGAPLUS_DOMAIN,
-    sourceTags: []
+    sourceTags: [
+        {
+            text: 'Notifications',
+            type: paperback_extensions_common_1.TagType.GREEN
+        }
+    ]
 };
 class MangaPlus extends paperback_extensions_common_1.Source {
     constructor() {
@@ -8078,6 +8083,11 @@ class MangaPlus extends paperback_extensions_common_1.Source {
             }
         });
     }
+    filterUpdatedManga(mangaUpdatesFoundCallback, _time, ids) {
+        return __awaiter(this, void 0, void 0, function* () {
+            mangaUpdatesFoundCallback(createMangaUpdates({ ids }));
+        });
+    }
     getSearchResults(query, metadata) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
@@ -8134,7 +8144,7 @@ class MangaPlus extends paperback_extensions_common_1.Source {
                 },
                 {
                     requests: [
-                        createRequestObject(MangaPlusHelper_1.LatestRequest),
+                        createRequestObject(MangaPlusHelper_1.LatestUpdatesRequest),
                         createRequestObject(MangaPlusHelper_1.PopularRequest)
                     ],
                     section: createHomeSection({
@@ -8189,7 +8199,7 @@ class MangaPlus extends paperback_extensions_common_1.Source {
                     }
                     case 'latest': {
                         requests = [
-                            createRequestObject(MangaPlusHelper_1.LatestRequest),
+                            createRequestObject(MangaPlusHelper_1.LatestUpdatesRequest),
                             createRequestObject(MangaPlusHelper_1.PopularRequest)
                         ];
                         const responses = yield Promise.all(requests.map((request) => this.requestManager.schedule(request, 1)));
@@ -8237,7 +8247,7 @@ exports.MangaPlus = MangaPlus;
 },{"./MangaPlusHelper":90,"./MangaPlusInterceptor":91,"./MangaPlusSettings":92,"./Parser":93,"./Utility":94,"./interceptors":97,"paperback-extensions-common":15}],90:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LatestRequest = exports.PopularRequest = exports.HEX_GROUP = exports.ID_REGEX = exports.COMPLETE_REGEX = exports.TITLE_THUMBNAIL_PATH = exports.API_DOMAIN = exports.MANGAPLUS_DOMAIN = exports.LangCode = exports.TitleList = void 0;
+exports.LatestUpdatesRequest = exports.PopularRequest = exports.HEX_GROUP = exports.ID_REGEX = exports.COMPLETE_REGEX = exports.TITLE_THUMBNAIL_PATH = exports.API_DOMAIN = exports.MANGAPLUS_DOMAIN = exports.LangCode = exports.TitleList = void 0;
 class TitleList {
     static get() {
         return TitleList.titleList;
@@ -8264,7 +8274,7 @@ exports.PopularRequest = {
         referer: `${exports.MANGAPLUS_DOMAIN}/manga_list/hot`
     }
 };
-exports.LatestRequest = {
+exports.LatestUpdatesRequest = {
     url: `${exports.API_DOMAIN}/web/web_homeV3?lang=eng`,
     method: 'GET',
     headers: {

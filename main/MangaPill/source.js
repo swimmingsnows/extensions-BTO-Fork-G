@@ -612,7 +612,7 @@ const paperback_extensions_common_1 = require("paperback-extensions-common");
 const Parser_1 = require("./Parser");
 const MANGAPILL_DOMAIN = 'https://www.mangapill.com';
 exports.MangaPillInfo = {
-    version: '2.0.0',
+    version: '2.0.1',
     name: 'MangaPill',
     description: 'Extension that pulls manga from mangapill.com. It has a lot of officially translated manga but can sometimes miss manga notifications',
     author: 'GameFuzzy',
@@ -702,14 +702,11 @@ class MangaPill extends paperback_extensions_common_1.Source {
         var _a, _b, _c, _d;
         return __awaiter(this, void 0, void 0, function* () {
             const page = (_a = metadata === null || metadata === void 0 ? void 0 : metadata.page) !== null && _a !== void 0 ? _a : 1;
-            let genres = ((_c = (_b = query.includedTags) === null || _b === void 0 ? void 0 : _b.map(tag => tag.id)) !== null && _c !== void 0 ? _c : []).join('&genre=');
-            if (genres != '') {
-                genres = '&genre=' + genres;
-            }
+            const tags = ((_c = (_b = query.includedTags) === null || _b === void 0 ? void 0 : _b.map(tag => tag.id)) !== null && _c !== void 0 ? _c : []).join('');
             const request = createRequestObject({
                 url: `${MANGAPILL_DOMAIN}/search`,
                 method: 'GET',
-                param: `?q=${encodeURIComponent((_d = query.title) !== null && _d !== void 0 ? _d : '')}${genres}&page=${page}`
+                param: `?q=${encodeURIComponent((_d = query.title) !== null && _d !== void 0 ? _d : '')}${tags}&page=${page}`
             });
             const data = yield this.requestManager.schedule(request, 1);
             const $ = this.cheerio.load(data.data);
@@ -727,7 +724,7 @@ class MangaPill extends paperback_extensions_common_1.Source {
             });
         });
     }
-    getTags() {
+    getSearchTags() {
         return __awaiter(this, void 0, void 0, function* () {
             const request = createRequestObject({
                 url: `${MANGAPILL_DOMAIN}/search`,
@@ -986,15 +983,28 @@ class Parser {
         return mangaTiles;
     }
     parseTags($) {
-        var _a, _b, _c;
-        const tagSections = [createTagSection({ id: '0', label: 'genres', tags: [] }),
-            createTagSection({ id: '1', label: 'format', tags: [] })];
-        for (const obj of $('Label', $('.gap-2')).toArray()) {
+        var _a, _b, _c, _d, _e, _f;
+        const tagSections = [createTagSection({ id: '0', label: 'Genres', tags: [] }),
+            createTagSection({ id: '1', label: 'Format', tags: [] })];
+        for (const obj of $('.grid.gap-1 label').toArray()) {
             const genre = $(obj).text().trim();
-            const id = (_a = $('input', $(obj)).attr('value')) !== null && _a !== void 0 ? _a : genre;
+            const id = (_a = '&genre=' + $('input', $(obj)).attr('value')) !== null && _a !== void 0 ? _a : genre;
             (_b = tagSections[0]) === null || _b === void 0 ? void 0 : _b.tags.push(createTag({ id: id, label: genre }));
         }
-        (_c = tagSections[1]) === null || _c === void 0 ? void 0 : _c.tags.push(createTag({ id: 'manga', label: 'Manga' }));
+        for (const obj of $('select#type option:not([value=""])').toArray()) {
+            let genre = $(obj).text().trim();
+            // Capitalize first letter
+            genre = genre.charAt(0).toUpperCase() + genre.slice(1);
+            const id = (_c = '&type=' + $(obj).attr('value')) !== null && _c !== void 0 ? _c : genre;
+            (_d = tagSections[1]) === null || _d === void 0 ? void 0 : _d.tags.push(createTag({ id: id, label: genre }));
+        }
+        for (const obj of $('select#status option:not([value=""])').toArray()) {
+            let genre = $(obj).text().trim();
+            // Capitalize first letter
+            genre = genre.charAt(0).toUpperCase() + genre.slice(1);
+            const id = (_e = '&status=' + $(obj).attr('value')) !== null && _e !== void 0 ? _e : genre;
+            (_f = tagSections[1]) === null || _f === void 0 ? void 0 : _f.tags.push(createTag({ id: id, label: genre }));
+        }
         return tagSections;
     }
     parsePopularSection($) {
