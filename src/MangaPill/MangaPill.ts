@@ -179,7 +179,7 @@ export class MangaPill extends Source {
                     method: 'GET'
                 }),
                 section: createHomeSection({
-                    id: 'recently_updated',
+                    id: 'latest',
                     title: 'Latest Updates',
                     view_more: true,
                 }),
@@ -207,7 +207,16 @@ export class MangaPill extends Source {
             promises.push(
                 this.requestManager.schedule(section.request, 1).then(response => {
                     const $ = this.cheerio.load(response.data)
-                    section.section.items = section.section.id === '1' ? this.parser.parseRecentUpdatesSection($) : this.parser.parsePopularSection($)
+                    switch(section.section.id) {
+                        case 'latest':
+                            section.section.items = this.parser.parseRecentUpdatesSection($)
+                            break
+                        case 'popular':
+                            section.section.items = this.parser.parsePopularSection($)
+                            break
+                        case 'featured':
+                            section.section.items = this.parser.parseFeaturedSection($)
+                    }
                     sectionCallback(section.section)
                 }),
             )
@@ -223,7 +232,7 @@ export class MangaPill extends Source {
         let mData = undefined
         switch (homepageSectionId) {
 
-            case 'recently_updated': {
+            case 'latest': {
                 const request = createRequestObject({
                     url: `${MANGAPILL_DOMAIN}/chapters`,
                     method: 'GET'

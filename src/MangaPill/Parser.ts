@@ -20,13 +20,13 @@ export class Parser {
         const summary = $('p.text-sm.text-color-text-secondary').text().trim()
 
         let status = MangaStatus.ONGOING, released, rating = 0
-        let tagArray0: Tag[] = []
-        let tagArray1: Tag[] = []
+        let tagArrayGenres: Tag[] = []
+        let tagArrayFormat: Tag[] = []
         for (const obj of $('a[href*=genre]').toArray()) {
             const id = $(obj).attr('href')?.replace('/search?genre=', '').trim()
             const label = $(obj).text().trim()
             if (typeof id === 'undefined' || typeof label === 'undefined') continue
-            tagArray0 = [...tagArray0, createTag({id: id, label: $(obj).text().trim()})]
+            tagArrayGenres = [...tagArrayGenres, createTag({id: id, label: $(obj).text().trim()})]
         }
         let i = 0
         for (const item of $('div', $('.grid.grid-cols-1.gap-3.mb-3')).toArray()) {
@@ -37,7 +37,7 @@ export class Parser {
             switch (i) {
                 case 0: {
                     // Manga Type
-                    tagArray1 = [...tagArray1, createTag({
+                    tagArrayFormat = [...tagArrayFormat, createTag({
                         id: descObj.text().trim(),
                         label: descObj.text().trim().replace(/^\w/, (c: string) => c.toUpperCase())
                     })]
@@ -69,8 +69,8 @@ export class Parser {
             }
             i = 0
         }
-        const tagSections: TagSection[] = [createTagSection({id: '0', label: 'genres', tags: tagArray0}),
-            createTagSection({id: '1', label: 'format', tags: tagArray1})]
+        const tagSections: TagSection[] = [createTagSection({id: 'genres', label: 'Genres', tags: tagArrayGenres}),
+            createTagSection({id: 'format', label: 'Format', tags: tagArrayFormat})]
         return createManga({
             id: mangaId,
             rating: rating,
@@ -221,15 +221,12 @@ export class Parser {
         return mangaTiles
     }
 
-    // Add featured section back in whenever a section type for that comes around
-
-    
     parseFeaturedSection($ : any): MangaTile[]{
         const mangaTiles: MangaTile[] = []
-        for(const obj of $('div[class=relative]').toArray()) {
+        for(const obj of $('div[class=relative]:not([id="search-popup"])').toArray()) {
             const href = ($('a', $(obj)).attr('href') ?? '')
             const id = href.split('-')[0].split('/').pop() + '/' + href.split('/').pop()?.split('-chapter')[0].trim()
-            const titleText = this.decodeHTMLEntity($('.text-sm', $('.text-color-text-fire-ch', $('div', $(obj)))).text())
+            const titleText = this.decodeHTMLEntity($('.text-white:last-child', $(obj)).text())
 
             const image = $('img', $('div', $(obj))).attr('data-src')
 
@@ -246,8 +243,7 @@ export class Parser {
         }
         return mangaTiles
     }
-    
-    
+
     parseRecentUpdatesSection($: any): MangaTile[] {
         const mangaTiles: MangaTile[] = []
         const collectedIds: string[] = []
