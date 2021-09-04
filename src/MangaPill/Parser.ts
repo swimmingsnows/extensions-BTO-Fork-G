@@ -172,7 +172,7 @@ export class Parser {
 
         for (const obj of $('.grid.gap-1 label').toArray()) {
             const label = $(obj).text().trim()
-            const id = '&genre=' + $('input', $(obj)).attr('value') ?? label
+            const id = `&genre=${$(obj).attr('value')}`.replace(' ', '+') ?? label
             tagSections[0]!.tags = [...tagSections[0]?.tags ?? [], createTag({id, label})]
         }
 
@@ -182,7 +182,7 @@ export class Parser {
             // Capitalize first letter
             label = label.charAt(0).toUpperCase() + label.slice(1)
 
-            const id = '&type=' + $(obj).attr('value') ?? label
+            const id = `&type=${$(obj).attr('value')}`.replace(' ', '+') ?? label
             tagSections[1]!.tags = [...tagSections[1]?.tags ?? [], createTag({id, label})]
         }
 
@@ -192,7 +192,7 @@ export class Parser {
             // Capitalize first letter
             label = label.charAt(0).toUpperCase() + label.slice(1)
 
-            const id = '&status=' + $(obj).attr('value') ?? label
+            const id = `&status=${$(obj).attr('value')}`.replace(' ', '+') ?? label
             tagSections[2]!.tags = [...tagSections[2]?.tags ?? [], createTag({id, label})]
         }
 
