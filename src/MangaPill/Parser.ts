@@ -170,8 +170,8 @@ export class Parser {
         const tagSections: TagSection[] = [createTagSection({id: 'genres', label: 'Genres', tags: []}),
             createTagSection({id: 'format', label: 'Format', tags: []}), createTagSection({id: 'status', label: 'Status', tags: []})]
 
-        for (const obj of $('.grid.gap-1 label').toArray()) {
-            const label = $(obj).text().trim()
+        for (const obj of $('.grid.gap-1 input').toArray()) {
+            const label = $(obj).parent().text().trim()
             const id = '&genre=' + $(obj).attr('value') ?? label
             tagSections[0]!.tags = [...tagSections[0]?.tags ?? [], createTag({id, label})]
         }
