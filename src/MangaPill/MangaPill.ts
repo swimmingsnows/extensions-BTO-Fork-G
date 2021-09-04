@@ -119,7 +119,7 @@ export class MangaPill extends Source {
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
         const page: number = metadata?.page ?? 1
         const tags: string = (query.includedTags
-            ?.map(tag => tag.id) ?? []).join('')
+            ?.map(tag => tag.id.replace(' ', '+')) ?? []).join('')
 
         const request = createRequestObject({
             url: `${MANGAPILL_DOMAIN}/search`,
