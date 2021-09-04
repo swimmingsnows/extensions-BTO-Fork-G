@@ -20,7 +20,7 @@ import { Parser } from './Parser'
 const MANGAPILL_DOMAIN = 'https://www.mangapill.com'
 
 export const MangaPillInfo: SourceInfo = {
-    version: '2.0.4',
+    version: '2.0.5',
     name: 'MangaPill',
     description: 'Extension that pulls manga from mangapill.com. It has a lot of officially translated manga but can sometimes miss manga notifications',
     author: 'GameFuzzy',
@@ -119,12 +119,12 @@ export class MangaPill extends Source {
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
         const page: number = metadata?.page ?? 1
         const tags: string = (query.includedTags
-            ?.map(tag => tag.id.replace(' ', '+')) ?? []).join('')
+            ?.map(tag => tag.id) ?? []).join('')
 
         const request = createRequestObject({
             url: `${MANGAPILL_DOMAIN}/search`,
             method: 'GET',
-            param: `?q=${encodeURIComponent(query.title ?? '')}${tags}&page=${page}`
+            param: `?q=${encodeURIComponent(query.title! + tags)}&page=${page}`
         })
 
         const data = await this.requestManager.schedule(request, 1)
