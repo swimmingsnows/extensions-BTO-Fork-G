@@ -168,32 +168,32 @@ export class Parser {
 
     parseTags($: any): TagSection[] {
         const tagSections: TagSection[] = [createTagSection({id: '0', label: 'Genres', tags: []}),
-            createTagSection({id: '1', label: 'Format', tags: []})]
+            createTagSection({id: '1', label: 'Format', tags: []}), createTagSection({id: '2', label: 'Status', tags: []})]
 
         for (const obj of $('.grid.gap-1 label').toArray()) {
-            const genre = $(obj).text().trim()
-            const id = '&genre=' + $('input', $(obj)).attr('value') ?? genre
-            tagSections[0]?.tags.push(createTag({id: id, label: genre}))
+            const label = $(obj).text().trim()
+            const id = '&genre=' + $('input', $(obj)).attr('value') ?? label
+            tagSections[0]?.tags.push(createTag({id, label}))
         }
 
         for (const obj of $('select#type option:not([value=""])').toArray()) {
-            let genre = $(obj).text().trim()
+            let label = $(obj).text().trim()
 
             // Capitalize first letter
-            genre = genre.charAt(0).toUpperCase() + genre.slice(1)
+            label = label.charAt(0).toUpperCase() + label.slice(1)
 
-            const id = '&type=' + $(obj).attr('value') ?? genre
-            tagSections[1]?.tags.push(createTag({id: id, label: genre}))
+            const id = '&type=' + $(obj).attr('value') ?? label
+            tagSections[1]?.tags.push(createTag({id, label}))
         }
 
         for (const obj of $('select#status option:not([value=""])').toArray()) {
 
-            let genre = $(obj).text().trim()
+            let label = $(obj).text().trim()
             // Capitalize first letter
-            genre = genre.charAt(0).toUpperCase() + genre.slice(1)
+            label = label.charAt(0).toUpperCase() + label.slice(1)
 
-            const id = '&status=' + $(obj).attr('value') ?? genre
-            tagSections[1]?.tags.push(createTag({id: id, label: genre}))
+            const id = '&status=' + $(obj).attr('value') ?? label
+            tagSections[2]?.tags.push(createTag({id, label}))
         }
 
         return tagSections
