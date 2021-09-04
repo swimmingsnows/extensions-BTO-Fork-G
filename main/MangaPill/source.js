@@ -737,16 +737,26 @@ class MangaPill extends paperback_extensions_common_1.Source {
     }
     getHomePageSections(sectionCallback) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Add featured section back in whenever a section type for that comes around
             const sections = [
+                {
+                    request: createRequestObject({
+                        url: MANGAPILL_DOMAIN,
+                        method: 'GET'
+                    }),
+                    section: createHomeSection({
+                        id: 'featured',
+                        title: 'Featured',
+                        type: paperback_extensions_common_1.HomeSectionType.featured,
+                    }),
+                },
                 {
                     request: createRequestObject({
                         url: `${MANGAPILL_DOMAIN}/chapters`,
                         method: 'GET'
                     }),
                     section: createHomeSection({
-                        id: '1',
-                        title: 'RECENTLY UPDATED MANGA',
+                        id: 'recently_updated',
+                        title: 'Latest Updates',
                         view_more: true,
                     }),
                 },
@@ -756,8 +766,8 @@ class MangaPill extends paperback_extensions_common_1.Source {
                         method: 'GET'
                     }),
                     section: createHomeSection({
-                        id: '2',
-                        title: 'POPULAR MANGA',
+                        id: 'popular',
+                        title: 'Popular',
                         view_more: true
                     }),
                 },
@@ -784,7 +794,7 @@ class MangaPill extends paperback_extensions_common_1.Source {
             let manga;
             let mData = undefined;
             switch (homepageSectionId) {
-                case '1': {
+                case 'recently_updated': {
                     const request = createRequestObject({
                         url: `${MANGAPILL_DOMAIN}/chapters`,
                         method: 'GET'
@@ -794,7 +804,7 @@ class MangaPill extends paperback_extensions_common_1.Source {
                     manga = this.parser.parseRecentUpdatesSection($);
                     break;
                 }
-                case '2': {
+                case 'popular': {
                     const request = createRequestObject({
                         url: `${MANGAPILL_DOMAIN}/search?q=&type=&status=&page=${page}`,
                         method: 'GET'
@@ -827,6 +837,7 @@ exports.MangaPill = MangaPill;
 
 },{"./Parser":57,"paperback-extensions-common":13}],57:[function(require,module,exports){
 "use strict";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
 const paperback_extensions_common_1 = require("paperback-extensions-common");
@@ -983,27 +994,27 @@ class Parser {
         return mangaTiles;
     }
     parseTags($) {
-        var _a, _b, _c, _d, _e, _f;
-        const tagSections = [createTagSection({ id: '0', label: 'Genres', tags: [] }),
-            createTagSection({ id: '1', label: 'Format', tags: [] }), createTagSection({ id: '2', label: 'Status', tags: [] })];
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        const tagSections = [createTagSection({ id: 'genres', label: 'Genres', tags: [] }),
+            createTagSection({ id: 'format', label: 'Format', tags: [] }), createTagSection({ id: 'status', label: 'Status', tags: [] })];
         for (const obj of $('.grid.gap-1 label').toArray()) {
             const label = $(obj).text().trim();
             const id = (_a = '&genre=' + $('input', $(obj)).attr('value')) !== null && _a !== void 0 ? _a : label;
-            (_b = tagSections[0]) === null || _b === void 0 ? void 0 : _b.tags.push(createTag({ id, label }));
+            tagSections[0].tags = [...(_c = (_b = tagSections[0]) === null || _b === void 0 ? void 0 : _b.tags) !== null && _c !== void 0 ? _c : [], createTag({ id, label })];
         }
         for (const obj of $('select#type option:not([value=""])').toArray()) {
             let label = $(obj).text().trim();
             // Capitalize first letter
             label = label.charAt(0).toUpperCase() + label.slice(1);
-            const id = (_c = '&type=' + $(obj).attr('value')) !== null && _c !== void 0 ? _c : label;
-            (_d = tagSections[1]) === null || _d === void 0 ? void 0 : _d.tags.push(createTag({ id, label }));
+            const id = (_d = '&type=' + $(obj).attr('value')) !== null && _d !== void 0 ? _d : label;
+            tagSections[1].tags = [...(_f = (_e = tagSections[1]) === null || _e === void 0 ? void 0 : _e.tags) !== null && _f !== void 0 ? _f : [], createTag({ id, label })];
         }
         for (const obj of $('select#status option:not([value=""])').toArray()) {
             let label = $(obj).text().trim();
             // Capitalize first letter
             label = label.charAt(0).toUpperCase() + label.slice(1);
-            const id = (_e = '&status=' + $(obj).attr('value')) !== null && _e !== void 0 ? _e : label;
-            (_f = tagSections[2]) === null || _f === void 0 ? void 0 : _f.tags.push(createTag({ id, label }));
+            const id = (_g = '&status=' + $(obj).attr('value')) !== null && _g !== void 0 ? _g : label;
+            tagSections[2].tags = [...(_j = (_h = tagSections[2]) === null || _h === void 0 ? void 0 : _h.tags) !== null && _j !== void 0 ? _j : [], createTag({ id, label })];
         }
         return tagSections;
     }
@@ -1029,30 +1040,28 @@ class Parser {
         return mangaTiles;
     }
     // Add featured section back in whenever a section type for that comes around
-    /*
-    parseFeaturedSection($ : CheerioSelector): MangaTile[]{
-      let mangaTiles: MangaTile[] = []
-      for(let obj of $('div[class=relative]').toArray()) {
-        let href = ($('a', $(obj)).attr('href') ?? '')
-        let id = href.split('-')[0].split('/').pop() + '/' + href.split('/').pop()?.split('-chapter')[0].trim()
-        let titleText = this.decodeHTMLEntity($('.text-sm', $('.text-color-text-fire-ch', $('div', $(obj)))).text())
-
-        let image = $('img', $('div', $(obj))).attr('data-src')
-
-        let collectedIds: string[] = []
-        if (typeof id === 'undefined' || typeof image === 'undefined') continue
-        if(!collectedIds.includes(id)) {
-          mangaTiles.push(createMangaTile({
-            id: id,
-            title: createIconText({text: titleText}),
-            image: image
-        }))
-        collectedIds.push(id)
+    parseFeaturedSection($) {
+        var _a, _b;
+        const mangaTiles = [];
+        for (const obj of $('div[class=relative]').toArray()) {
+            const href = ((_a = $('a', $(obj)).attr('href')) !== null && _a !== void 0 ? _a : '');
+            const id = href.split('-')[0].split('/').pop() + '/' + ((_b = href.split('/').pop()) === null || _b === void 0 ? void 0 : _b.split('-chapter')[0].trim());
+            const titleText = this.decodeHTMLEntity($('.text-sm', $('.text-color-text-fire-ch', $('div', $(obj)))).text());
+            const image = $('img', $('div', $(obj))).attr('data-src');
+            const collectedIds = [];
+            if (typeof id === 'undefined' || typeof image === 'undefined')
+                continue;
+            if (!collectedIds.includes(id)) {
+                mangaTiles.push(createMangaTile({
+                    id: id,
+                    title: createIconText({ text: titleText }),
+                    image: image
+                }));
+                collectedIds.push(id);
+            }
         }
-      }
-      return mangaTiles
+        return mangaTiles;
     }
-    */
     parseRecentUpdatesSection($) {
         var _a;
         const mangaTiles = [];
