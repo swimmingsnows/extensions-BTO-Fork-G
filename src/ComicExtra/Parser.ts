@@ -199,20 +199,6 @@ export class Parser {
         return mangaTiles
     }
 
-    parseTags($: any): TagSection[] {
-        
-        const tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
-            createTagSection({ id: '1', label: 'format', tags: [] })]
-    
-        for(const obj of $('a', $('.home-list')).toArray()) {
-            const id = $(obj).attr('href')?.replace(`${COMICEXTRA_DOMAIN}/`, '').trim() ?? $(obj).text().trim()
-            const genre = $(obj).text().trim()
-            tagSections[0]?.tags.push(createTag({id: id, label: genre}))
-        }
-        tagSections[1]?.tags.push(createTag({id: 'comic/', label: 'Comic'}))
-        return tagSections
-    }
-
     parseHomePageSection($ : any): MangaTile[]{
         
         const tiles: MangaTile[] = []

@@ -9,8 +9,8 @@ import {
     SearchRequest,
     Source,
     SourceInfo,
-    TagSection,
     TagType,
+    Request
 } from 'paperback-extensions-common'
 
 import { Parser } from './Parser'
@@ -18,7 +18,7 @@ import { Parser } from './Parser'
 const BATOTO_DOMAIN = 'https://bato.to'
 
 export const BatoToInfo: SourceInfo = {
-    version: '2.0.0',
+    version: '2.0.1',
     name: 'Bato.To',
     description: 'Extension that pulls western comics from bato.to',
     author: 'GameFuzzy',
@@ -150,20 +150,6 @@ export class BatoTo extends Source {
 
     }
 
-
-    override async getTags(): Promise<TagSection[]> {
-        const request = createRequestObject({
-            url: `${BATOTO_DOMAIN}/browse`,
-            method: 'GET'
-        })
-
-        const data = await this.requestManager.schedule(request, 1)
-        const $ = this.cheerio.load(data.data)
-
-        return this.parser.parseTags($)
-    }
-
-
     override async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
 
         const sections = [
@@ -264,7 +250,7 @@ export class BatoTo extends Source {
         })
     }
 
-    override getCloudflareBypassRequest() {
+    override getCloudflareBypassRequest(): Request {
         return createRequestObject({
             url: `${BATOTO_DOMAIN}`,
             method: 'GET',

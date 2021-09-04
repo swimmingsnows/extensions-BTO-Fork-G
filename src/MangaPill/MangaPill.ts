@@ -11,6 +11,7 @@ import {
     SourceInfo,
     TagSection,
     TagType,
+    Request
 } from 'paperback-extensions-common'
 
 import { Parser } from './Parser'
@@ -18,7 +19,7 @@ import { Parser } from './Parser'
 const MANGAPILL_DOMAIN = 'https://www.mangapill.com'
 
 export const MangaPillInfo: SourceInfo = {
-    version: '2.0.0',
+    version: '2.0.1',
     name: 'MangaPill',
     description: 'Extension that pulls manga from mangapill.com. It has a lot of officially translated manga but can sometimes miss manga notifications',
     author: 'GameFuzzy',
@@ -117,14 +118,13 @@ export class MangaPill extends Source {
 
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
         const page: number = metadata?.page ?? 1
-        let genres: string = (query.includedTags?.map(tag => tag.id) ?? []).join('&genre=')
-        if (genres != '') {
-            genres = '&genre=' + genres
-        }
+        const tags: string = (query.includedTags
+            ?.map(tag => tag.id) ?? []).join('')
+
         const request = createRequestObject({
             url: `${MANGAPILL_DOMAIN}/search`,
             method: 'GET',
-            param: `?q=${encodeURIComponent(query.title ?? '')}${genres}&page=${page}`
+            param: `?q=${encodeURIComponent(query.title ?? '')}${tags}&page=${page}`
         })
 
         const data = await this.requestManager.schedule(request, 1)
@@ -145,7 +145,7 @@ export class MangaPill extends Source {
     }
 
 
-    override async getTags(): Promise<TagSection[]> {
+    override async getSearchTags(): Promise<TagSection[]> {
         const request = createRequestObject({
             url: `${MANGAPILL_DOMAIN}/search`,
             method: 'GET'
@@ -251,7 +251,7 @@ export class MangaPill extends Source {
         })
     }
 
-    override getCloudflareBypassRequest() {
+    override getCloudflareBypassRequest(): Request {
         return createRequestObject({
             url: `${MANGAPILL_DOMAIN}`,
             method: 'GET',

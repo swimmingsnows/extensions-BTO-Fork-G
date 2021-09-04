@@ -15,13 +15,14 @@ import {
     TagType,
     ContentRating,
     Section,
-    Request
+    Request,
+    MangaUpdates
 } from 'paperback-extensions-common'
 
 import {
     MANGAPLUS_DOMAIN,
     API_DOMAIN,
-    LatestRequest,
+    LatestUpdatesRequest,
     PopularRequest,
     ID_REGEX
 } from './MangaPlusHelper'
@@ -42,7 +43,7 @@ import { ImageInterceptor,
 
 
 export const MangaPlusInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'MangaPlus',
     description: 'Extension that pulls licensed manga from MangaPlus.',
     author: 'GameFuzzy',
@@ -50,7 +51,12 @@ export const MangaPlusInfo: SourceInfo = {
     icon: 'icon.png',
     contentRating: ContentRating.MATURE,
     websiteBaseURL: MANGAPLUS_DOMAIN,
-    sourceTags: []
+    sourceTags: [
+        {
+            text: 'Notifications',
+            type: TagType.GREEN
+        }
+    ]
 }
 
 export class MangaPlus extends Source {
@@ -141,6 +147,10 @@ export class MangaPlus extends Source {
         }
     }
 
+    override async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, _time: Date, ids: string[]): Promise<void> {
+        mangaUpdatesFoundCallback(createMangaUpdates({ids}))
+    }
+
     async getSearchResults(
         query: SearchRequest,
         metadata: any
@@ -210,7 +220,7 @@ export class MangaPlus extends Source {
             },
             {
                 requests: [
-                    createRequestObject(LatestRequest),
+                    createRequestObject(LatestUpdatesRequest),
                     createRequestObject(PopularRequest)
                 ],
                 section: createHomeSection({
@@ -284,7 +294,7 @@ export class MangaPlus extends Source {
                 }
                 case 'latest': {
                     requests = [
-                        createRequestObject(LatestRequest),
+                        createRequestObject(LatestUpdatesRequest),
                         createRequestObject(PopularRequest)
                     ]
 

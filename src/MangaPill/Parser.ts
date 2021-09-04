@@ -167,15 +167,35 @@ export class Parser {
     }
 
     parseTags($: any): TagSection[] {
-        const tagSections: TagSection[] = [createTagSection({id: '0', label: 'genres', tags: []}),
-            createTagSection({id: '1', label: 'format', tags: []})]
+        const tagSections: TagSection[] = [createTagSection({id: '0', label: 'Genres', tags: []}),
+            createTagSection({id: '1', label: 'Format', tags: []})]
 
-        for (const obj of $('Label', $('.gap-2')).toArray()) {
+        for (const obj of $('.grid.gap-1 label').toArray()) {
             const genre = $(obj).text().trim()
-            const id = $('input', $(obj)).attr('value') ?? genre
+            const id = '&genre=' + $('input', $(obj)).attr('value') ?? genre
             tagSections[0]?.tags.push(createTag({id: id, label: genre}))
         }
-        tagSections[1]?.tags.push(createTag({id: 'manga', label: 'Manga'}))
+
+        for (const obj of $('select#type option:not([value=""])').toArray()) {
+            let genre = $(obj).text().trim()
+
+            // Capitalize first letter
+            genre = genre.charAt(0).toUpperCase() + genre.slice(1)
+
+            const id = '&type=' + $(obj).attr('value') ?? genre
+            tagSections[1]?.tags.push(createTag({id: id, label: genre}))
+        }
+
+        for (const obj of $('select#status option:not([value=""])').toArray()) {
+
+            let genre = $(obj).text().trim()
+            // Capitalize first letter
+            genre = genre.charAt(0).toUpperCase() + genre.slice(1)
+
+            const id = '&status=' + $(obj).attr('value') ?? genre
+            tagSections[1]?.tags.push(createTag({id: id, label: genre}))
+        }
+
         return tagSections
     }
 

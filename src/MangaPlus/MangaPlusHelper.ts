@@ -31,7 +31,7 @@ export const PopularRequest = {
     }
 }
 
-export const LatestRequest = {
+export const LatestUpdatesRequest = {
     url: `${API_DOMAIN}/web/web_homeV3?lang=eng`,
     method: 'GET',
     headers: {

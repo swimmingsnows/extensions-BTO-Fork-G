@@ -10,7 +10,6 @@ import {
     SearchRequest,
     Source,
     SourceInfo,
-    TagSection,
     TagType,
 } from 'paperback-extensions-common'
 
@@ -19,7 +18,7 @@ import {Parser,} from './Parser'
 const COMICEXTRA_DOMAIN = 'https://www.comicextra.com'
 
 export const ComicExtraInfo: SourceInfo = {
-    version: '2.0.0',
+    version: '2.0.1',
     name: 'ComicExtra',
     description: 'Extension that pulls western comics from comicextra.com',
     author: 'GameFuzzy',
@@ -188,20 +187,6 @@ export class ComicExtra extends Source {
         })
 
     }
-
-
-    override async getTags(): Promise<TagSection[]> {
-        const request = createRequestObject({
-            url: `${COMICEXTRA_DOMAIN}/comic-genres/`,
-            method: 'GET'
-        })
-
-        const data = await this.requestManager.schedule(request, 1)
-        const $ = this.cheerio.load(data.data)
-
-        return this.parser.parseTags($)
-    }
-
 
     override async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
 

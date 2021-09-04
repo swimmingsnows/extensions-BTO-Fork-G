@@ -236,17 +236,6 @@ export class Parser {
         return mangaTiles
     }
 
-    parseTags($: any): TagSection[] {
-
-        const tagSections: TagSection[] = [createTagSection({id: '0', label: 'genres', tags: []})]
-
-        for (const obj of $('filter-item', $('.filter-items').first()).toArray()) {
-            const label = $('span', $(obj)).text().trim()
-            tagSections[0]?.tags.push(createTag({id: label, label: label}))
-        }
-        return tagSections
-    }
-
     parseHomePageSection($: any, source: any): MangaTile[] {
 
         const tiles: MangaTile[] = []
