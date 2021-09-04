@@ -612,7 +612,7 @@ const paperback_extensions_common_1 = require("paperback-extensions-common");
 const Parser_1 = require("./Parser");
 const MANGAPILL_DOMAIN = 'https://www.mangapill.com';
 exports.MangaPillInfo = {
-    version: '2.0.5',
+    version: '2.0.6',
     name: 'MangaPill',
     description: 'Extension that pulls manga from mangapill.com. It has a lot of officially translated manga but can sometimes miss manga notifications',
     author: 'GameFuzzy',
@@ -1006,8 +1006,8 @@ class Parser {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         const tagSections = [createTagSection({ id: 'genres', label: 'Genres', tags: [] }),
             createTagSection({ id: 'format', label: 'Format', tags: [] }), createTagSection({ id: 'status', label: 'Status', tags: [] })];
-        for (const obj of $('.grid.gap-1 label').toArray()) {
-            const label = $(obj).text().trim();
+        for (const obj of $('.grid.gap-1 input').toArray()) {
+            const label = $(obj).parent().text().trim();
             const id = (_a = '&genre=' + $(obj).attr('value')) !== null && _a !== void 0 ? _a : label;
             tagSections[0].tags = [...(_c = (_b = tagSections[0]) === null || _b === void 0 ? void 0 : _b.tags) !== null && _c !== void 0 ? _c : [], createTag({ id, label })];
         }
