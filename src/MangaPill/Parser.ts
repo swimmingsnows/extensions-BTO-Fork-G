@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import {Chapter,
     LanguageCode,
     Manga,
@@ -11,9 +13,7 @@ const entities = require('entities')
 
 export class Parser {
 
-
     parseMangaDetails($: any, mangaId: string): Manga {
-
 
         const titles = [this.decodeHTMLEntity($('.font-bold.text-lg').text().trim())]
         const image = $('.lazy').attr('data-src')
@@ -167,13 +167,13 @@ export class Parser {
     }
 
     parseTags($: any): TagSection[] {
-        const tagSections: TagSection[] = [createTagSection({id: '0', label: 'Genres', tags: []}),
-            createTagSection({id: '1', label: 'Format', tags: []}), createTagSection({id: '2', label: 'Status', tags: []})]
+        const tagSections: TagSection[] = [createTagSection({id: 'genres', label: 'Genres', tags: []}),
+            createTagSection({id: 'format', label: 'Format', tags: []}), createTagSection({id: 'status', label: 'Status', tags: []})]
 
         for (const obj of $('.grid.gap-1 label').toArray()) {
             const label = $(obj).text().trim()
             const id = '&genre=' + $('input', $(obj)).attr('value') ?? label
-            tagSections[0]?.tags.push(createTag({id, label}))
+            tagSections[0]!.tags = [...tagSections[0]?.tags ?? [], createTag({id, label})]
         }
 
         for (const obj of $('select#type option:not([value=""])').toArray()) {
@@ -183,7 +183,7 @@ export class Parser {
             label = label.charAt(0).toUpperCase() + label.slice(1)
 
             const id = '&type=' + $(obj).attr('value') ?? label
-            tagSections[1]?.tags.push(createTag({id, label}))
+            tagSections[1]!.tags = [...tagSections[1]?.tags ?? [], createTag({id, label})]
         }
 
         for (const obj of $('select#status option:not([value=""])').toArray()) {
@@ -193,7 +193,7 @@ export class Parser {
             label = label.charAt(0).toUpperCase() + label.slice(1)
 
             const id = '&status=' + $(obj).attr('value') ?? label
-            tagSections[2]?.tags.push(createTag({id, label}))
+            tagSections[2]!.tags = [...tagSections[2]?.tags ?? [], createTag({id, label})]
         }
 
         return tagSections
@@ -223,30 +223,31 @@ export class Parser {
 
     // Add featured section back in whenever a section type for that comes around
 
-    /*
-    parseFeaturedSection($ : CheerioSelector): MangaTile[]{
-      let mangaTiles: MangaTile[] = []
-      for(let obj of $('div[class=relative]').toArray()) {
-        let href = ($('a', $(obj)).attr('href') ?? '')
-        let id = href.split('-')[0].split('/').pop() + '/' + href.split('/').pop()?.split('-chapter')[0].trim()
-        let titleText = this.decodeHTMLEntity($('.text-sm', $('.text-color-text-fire-ch', $('div', $(obj)))).text())
+    
+    parseFeaturedSection($ : any): MangaTile[]{
+        const mangaTiles: MangaTile[] = []
+        for(const obj of $('div[class=relative]').toArray()) {
+            const href = ($('a', $(obj)).attr('href') ?? '')
+            const id = href.split('-')[0].split('/').pop() + '/' + href.split('/').pop()?.split('-chapter')[0].trim()
+            const titleText = this.decodeHTMLEntity($('.text-sm', $('.text-color-text-fire-ch', $('div', $(obj)))).text())
 
-        let image = $('img', $('div', $(obj))).attr('data-src')
+            const image = $('img', $('div', $(obj))).attr('data-src')
 
-        let collectedIds: string[] = []
-        if (typeof id === 'undefined' || typeof image === 'undefined') continue
-        if(!collectedIds.includes(id)) {
-          mangaTiles.push(createMangaTile({
-            id: id,
-            title: createIconText({text: titleText}),
-            image: image
-        }))
-        collectedIds.push(id)
+            const collectedIds: string[] = []
+            if (typeof id === 'undefined' || typeof image === 'undefined') continue
+            if(!collectedIds.includes(id)) {
+                mangaTiles.push(createMangaTile({
+                    id: id,
+                    title: createIconText({text: titleText}),
+                    image: image
+                }))
+                collectedIds.push(id)
+            }
         }
-      }
-      return mangaTiles
+        return mangaTiles
     }
-    */
+    
+    
     parseRecentUpdatesSection($: any): MangaTile[] {
         const mangaTiles: MangaTile[] = []
         const collectedIds: string[] = []

@@ -11,7 +11,8 @@ import {
     SourceInfo,
     TagSection,
     TagType,
-    Request
+    Request,
+    HomeSectionType
 } from 'paperback-extensions-common'
 
 import { Parser } from './Parser'
@@ -160,17 +161,26 @@ export class MangaPill extends Source {
 
     override async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
 
-        // Add featured section back in whenever a section type for that comes around
-
         const sections = [
+            {
+                request: createRequestObject({
+                    url: MANGAPILL_DOMAIN,
+                    method: 'GET'
+                }),
+                section: createHomeSection({
+                    id: 'featured',
+                    title: 'Featured',
+                    type: HomeSectionType.featured,
+                }),
+            },
             {
                 request: createRequestObject({
                     url: `${MANGAPILL_DOMAIN}/chapters`,
                     method: 'GET'
                 }),
                 section: createHomeSection({
-                    id: '1',
-                    title: 'RECENTLY UPDATED MANGA',
+                    id: 'recently_updated',
+                    title: 'Latest Updates',
                     view_more: true,
                 }),
             },
@@ -180,8 +190,8 @@ export class MangaPill extends Source {
                     method: 'GET'
                 }),
                 section: createHomeSection({
-                    id: '2',
-                    title: 'POPULAR MANGA',
+                    id: 'popular',
+                    title: 'Popular',
                     view_more: true
                 }),
             },
@@ -213,7 +223,7 @@ export class MangaPill extends Source {
         let mData = undefined
         switch (homepageSectionId) {
 
-            case '1': {
+            case 'recently_updated': {
                 const request = createRequestObject({
                     url: `${MANGAPILL_DOMAIN}/chapters`,
                     method: 'GET'
@@ -225,7 +235,7 @@ export class MangaPill extends Source {
                 manga = this.parser.parseRecentUpdatesSection($)
                 break
             }
-            case '2': {
+            case 'popular': {
                 const request = createRequestObject({
                     url: `${MANGAPILL_DOMAIN}/search?q=&type=&status=&page=${page}`,
                     method: 'GET'
