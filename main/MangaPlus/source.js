@@ -8057,8 +8057,8 @@ class MangaPlus extends paperback_extensions_common_1.Source {
                     url: new Utility_1.URLBuilder(MangaPlusHelper_1.API_DOMAIN)
                         .addPathComponent('manga_viewer')
                         .addQueryParameter('chapter_id', chapterId)
-                        .addQueryParameter('split', (yield (0, MangaPlusSettings_1.getSplitImages)(this.stateManager)) ? 'yes' : 'no')
-                        .addQueryParameter('img_quality', (yield (0, MangaPlusSettings_1.getResolution)(this.stateManager))[0]
+                        .addQueryParameter('split', (yield (0, MangaPlusSettings_1.getSplitImages)(this.stateManager)))
+                        .addQueryParameter('img_quality', (yield (0, MangaPlusSettings_1.getResolution)(this.stateManager))
                         .toLowerCase()
                         .replace(' ', '_'))
                         .buildUrl(),
@@ -8339,15 +8339,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resetSettings = exports.contentSettings = exports.getResolution = exports.getSplitImages = exports.getLanguages = void 0;
 const MangaPlusHelper_1 = require("./MangaPlusHelper");
 const getLanguages = (stateManager) => __awaiter(void 0, void 0, void 0, function* () {
-    return (yield stateManager.retrieve('languages')) || ['en'];
+    var _a;
+    return (_a = (yield stateManager.retrieve('languages'))) !== null && _a !== void 0 ? _a : ['en'];
 });
 exports.getLanguages = getLanguages;
 const getSplitImages = (stateManager) => __awaiter(void 0, void 0, void 0, function* () {
-    return (yield stateManager.retrieve('splitImages')) || true;
+    var _b;
+    return (_b = (yield stateManager.retrieve('split_images'))) !== null && _b !== void 0 ? _b : 'yes';
 });
 exports.getSplitImages = getSplitImages;
 const getResolution = (stateManager) => __awaiter(void 0, void 0, void 0, function* () {
-    return ((yield stateManager.retrieve('imageResolution')) || ['High']);
+    var _c;
+    return ((_c = (yield stateManager.retrieve('image_resolution'))) !== null && _c !== void 0 ? _c : 'High');
 });
 exports.getResolution = getResolution;
 const contentSettings = (stateManager) => {
@@ -8359,8 +8362,8 @@ const contentSettings = (stateManager) => {
             onSubmit: (values) => {
                 return Promise.all([
                     stateManager.store('languages', values.languages),
-                    stateManager.store('splitImages', values.splitImages),
-                    stateManager.store('imageResolution', values.imageResolution)
+                    stateManager.store('split_images', values.splitImages ? 'yes' : 'no'),
+                    stateManager.store('image_resolution', values.imageResolution[0])
                 ]).then();
             },
             validate: () => {
@@ -8406,16 +8409,16 @@ const contentSettings = (stateManager) => {
                                         minimumOptionCount: 1
                                     }),
                                     createSwitch({
-                                        id: 'splitImages',
+                                        id: 'split_images',
                                         label: 'Split double pages',
-                                        value: values[1]
+                                        value: values[1] == 'yes'
                                     }),
                                     createSelect({
-                                        id: 'imageResolution',
+                                        id: 'image_resolution',
                                         label: 'Image resolution',
                                         options: ['Low', 'High', 'Super High'],
                                         displayLabel: (option) => option,
-                                        value: values[2]
+                                        value: [values[2]]
                                     })
                                 ];
                             }));
@@ -8435,8 +8438,8 @@ const resetSettings = (stateManager) => {
         onTap: () => {
             return Promise.all([
                 stateManager.store('languages', null),
-                stateManager.store('splitImages', null),
-                stateManager.store('imageResolution', null)
+                stateManager.store('split_images', null),
+                stateManager.store('image_resolution', null)
             ]);
         }
     });
