@@ -21,6 +21,14 @@ describe('MangaPlus Tests', () => {
    */
     const mangaId = '100160' // Choujin X
 
+    before(async () => {
+        const stateManager = createSourceStateManager({})
+
+        stateManager.store('languages', ['en']),
+        stateManager.store('split_images', 'yes'),
+        stateManager.store('image_resolution', 'high')
+    })
+
     it('Retrieve Manga Details', async () => {
         const details = await wrapper.getMangaDetails(source, mangaId)
         expect(details, 'No results found with test-defined ID [' + mangaId + ']')
@@ -61,7 +69,7 @@ describe('MangaPlus Tests', () => {
     it('Testing search', async () => {
         const testSearch: SearchRequest = {
             title: 'My Hero',
-            parameters: {'author': ['Kohei']}
+            parameters: {}
         }
 
         const search = await wrapper.searchRequest(source, testSearch, 1)

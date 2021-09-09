@@ -114,11 +114,11 @@ export class MangaPlus extends Source {
                     .addQueryParameter('chapter_id', chapterId)
                     .addQueryParameter(
                         'split',
-                        (await getSplitImages(this.stateManager)) ? 'yes' : 'no'
+                        (await getSplitImages(this.stateManager))
                     )
                     .addQueryParameter(
                         'img_quality',
-                        (await getResolution(this.stateManager))[0]!
+                        (await getResolution(this.stateManager))
                             .toLowerCase()
                             .replace(' ', '_')
                     )

@@ -8,20 +8,20 @@ import { LangCode } from './MangaPlusHelper'
 export const getLanguages = async (
     stateManager: SourceStateManager
 ): Promise<string[]> => {
-    return ((await stateManager.retrieve('languages')) as string[]) || ['en']
+    return (await stateManager.retrieve('languages') as string[] | undefined) ?? ['en']
 }
 
 export const getSplitImages = async (
     stateManager: SourceStateManager
-): Promise<boolean> => {
-    return ((await stateManager.retrieve('splitImages')) as boolean) || true
+): Promise<string> => {
+    return (await stateManager.retrieve('split_images') as string | undefined) ?? 'yes'
 }
 
 export const getResolution = async (
     stateManager: SourceStateManager
-): Promise<string[]> => {
+): Promise<string> => {
     return (
-        ((await stateManager.retrieve('imageResolution')) as string[]) || ['High']
+        (await stateManager.retrieve('image_resolution') as string | undefined) ?? 'High'
     )
 }
 
@@ -36,8 +36,8 @@ export const contentSettings = (
             onSubmit: (values: any) => {
                 return Promise.all([
                     stateManager.store('languages', values.languages),
-                    stateManager.store('splitImages', values.splitImages),
-                    stateManager.store('imageResolution', values.imageResolution)
+                    stateManager.store('split_images', values.splitImages ? 'yes' : 'no'),
+                    stateManager.store('image_resolution', values.imageResolution[0])
                 ]).then()
             },
             validate: () => {
@@ -90,16 +90,16 @@ export const contentSettings = (
                                         minimumOptionCount: 1
                                     }),
                                     createSwitch({
-                                        id: 'splitImages',
+                                        id: 'split_images',
                                         label: 'Split double pages',
-                                        value: values[1]
+                                        value: values[1] == 'yes'
                                     }),
                                     createSelect({
-                                        id: 'imageResolution',
+                                        id: 'image_resolution',
                                         label: 'Image resolution',
                                         options: ['Low', 'High', 'Super High'],
                                         displayLabel: (option) => option,
-                                        value: values[2]
+                                        value: [values[2]]
                                     })
                                 ]
                             })
@@ -119,8 +119,8 @@ export const resetSettings = (stateManager: SourceStateManager): Button => {
         onTap: () => {
             return Promise.all([
                 stateManager.store('languages', null),
-                stateManager.store('splitImages', null),
-                stateManager.store('imageResolution', null)
+                stateManager.store('split_images', null),
+                stateManager.store('image_resolution', null)
             ])
         }
     })
