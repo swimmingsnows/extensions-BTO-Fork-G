@@ -7994,7 +7994,7 @@ const Utility_1 = require("./Utility");
 const MangaPlusInterceptor_1 = require("./MangaPlusInterceptor");
 const interceptors_1 = require("./interceptors");
 exports.MangaPlusInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'MangaPlus',
     description: 'Extension that pulls licensed manga from MangaPlus.',
     author: 'GameFuzzy',
@@ -8362,8 +8362,8 @@ const contentSettings = (stateManager) => {
             onSubmit: (values) => {
                 return Promise.all([
                     stateManager.store('languages', values.languages),
-                    stateManager.store('split_images', values.splitImages ? 'yes' : 'no'),
-                    stateManager.store('image_resolution', values.imageResolution[0])
+                    stateManager.store('split_images', values.split_images ? 'yes' : 'no'),
+                    stateManager.store('image_resolution', values.image_resolution[0])
                 ]).then();
             },
             validate: () => {
