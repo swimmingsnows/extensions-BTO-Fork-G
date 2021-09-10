@@ -8,20 +8,20 @@ import { LangCode } from './MangaPlusHelper'
 export const getLanguages = async (
     stateManager: SourceStateManager
 ): Promise<string[]> => {
-    return (await stateManager.retrieve('languages') as string[] | undefined) ?? ['en']
+    return (await stateManager.retrieve('languages') as string[]) ?? ['en']
 }
 
 export const getSplitImages = async (
     stateManager: SourceStateManager
 ): Promise<string> => {
-    return (await stateManager.retrieve('split_images') as string | undefined) ?? 'yes'
+    return (await stateManager.retrieve('split_images') as string) ?? 'yes'
 }
 
 export const getResolution = async (
     stateManager: SourceStateManager
 ): Promise<string> => {
     return (
-        (await stateManager.retrieve('image_resolution') as string | undefined) ?? 'High'
+        (await stateManager.retrieve('image_resolution') as string) ?? 'High'
     )
 }
 
@@ -36,8 +36,8 @@ export const contentSettings = (
             onSubmit: (values: any) => {
                 return Promise.all([
                     stateManager.store('languages', values.languages),
-                    stateManager.store('split_images', values.splitImages ? 'yes' : 'no'),
-                    stateManager.store('image_resolution', values.imageResolution[0])
+                    stateManager.store('split_images', values.split_images ? 'yes' : 'no'),
+                    stateManager.store('image_resolution', values.image_resolution[0])
                 ]).then()
             },
             validate: () => {

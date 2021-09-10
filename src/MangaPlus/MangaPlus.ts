@@ -43,7 +43,7 @@ import { ImageInterceptor,
 
 
 export const MangaPlusInfo: SourceInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'MangaPlus',
     description: 'Extension that pulls licensed manga from MangaPlus.',
     author: 'GameFuzzy',
