@@ -7994,7 +7994,7 @@ const Utility_1 = require("./Utility");
 const MangaPlusInterceptor_1 = require("./MangaPlusInterceptor");
 const interceptors_1 = require("./interceptors");
 exports.MangaPlusInfo = {
-    version: '1.0.2',
+    version: '1.0.3',
     name: 'MangaPlus',
     description: 'Extension that pulls licensed manga from MangaPlus.',
     author: 'GameFuzzy',
@@ -8089,39 +8089,51 @@ class MangaPlus extends paperback_extensions_common_1.Source {
         });
     }
     getSearchResults(query, metadata) {
-        var _a, _b;
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const offset = (_a = metadata === null || metadata === void 0 ? void 0 : metadata.offset) !== null && _a !== void 0 ? _a : 0;
-                let id;
-                if (query.parameters && query.parameters['id'] && query.parameters['id'][0]) {
-                    id = query.parameters['id'][0].match(MangaPlusHelper_1.ID_REGEX);
-                }
-                if (id && id[0]) {
-                    const manga = yield this.getMangaDetails(id[0]);
-                    return createPagedResults({
-                        results: [
-                            createMangaTile({
-                                id: `${id[0]}`,
-                                image: manga.image,
-                                title: createIconText({ text: (_b = manga.titles[0]) !== null && _b !== void 0 ? _b : '' })
-                            })
-                        ]
-                    });
-                }
-                const request = createRequestObject({
-                    url: `${MangaPlusHelper_1.API_DOMAIN}/title_list/allV2`,
-                    method: 'GET',
-                    headers: {
-                        referer: `${MangaPlusHelper_1.MANGAPLUS_DOMAIN}/manga_list/all`
+                if (!metadata) {
+                    let id;
+                    if (query.parameters && query.parameters['id'] && query.parameters['id'][0]) {
+                        id = query.parameters['id'][0].match(MangaPlusHelper_1.ID_REGEX);
                     }
-                });
-                const response = yield this.requestManager.schedule(request, 1);
-                const data = createByteArray(response.rawData);
-                const results = this.parser.parseSearchResults(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager), query).slice(offset, offset + 100);
+                    if (id && id[0]) {
+                        const manga = yield this.getMangaDetails(id[0]);
+                        return createPagedResults({
+                            results: [
+                                createMangaTile({
+                                    id: `${id[0]}`,
+                                    image: manga.image,
+                                    title: createIconText({ text: (_a = manga.titles[0]) !== null && _a !== void 0 ? _a : '' })
+                                })
+                            ],
+                            metadata: {
+                                manga: [],
+                                offset: 0
+                            }
+                        });
+                    }
+                    const request = createRequestObject({
+                        url: `${MangaPlusHelper_1.API_DOMAIN}/title_list/allV2`,
+                        method: 'GET',
+                        headers: {
+                            referer: `${MangaPlusHelper_1.MANGAPLUS_DOMAIN}/manga_list/all`
+                        }
+                    });
+                    const response = yield this.requestManager.schedule(request, 1);
+                    const data = createByteArray(response.rawData);
+                    const results = this.parser.parseSearchResults(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager), query);
+                    metadata = {
+                        manga: results,
+                        offset: 0
+                    };
+                }
                 return createPagedResults({
-                    results,
-                    metadata: { offset: offset + 100 }
+                    results: metadata.manga.slice(metadata.offset, metadata.offset + 100),
+                    metadata: {
+                        manga: metadata.manga,
+                        offset: metadata.offset + 100
+                    }
                 });
             }
             catch (error) {
@@ -8181,40 +8193,42 @@ class MangaPlus extends paperback_extensions_common_1.Source {
         });
     }
     getViewMoreItems(homepageSectionId, metadata) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const offset = (_a = metadata === null || metadata === void 0 ? void 0 : metadata.offset) !== null && _a !== void 0 ? _a : 0;
-                let results;
-                let requests;
-                switch (homepageSectionId) {
-                    case 'popular': {
-                        requests = [createRequestObject(MangaPlusHelper_1.PopularRequest)];
-                        const responses = yield Promise.all(requests.map((request) => this.requestManager.schedule(request, 1)));
-                        const data = responses.map((response) => createByteArray(response.rawData));
-                        results = this.parser
-                            .parsePopularSection(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager))
-                            .slice(offset, offset + 100);
-                        break;
+                if (!metadata) {
+                    let results;
+                    switch (homepageSectionId) {
+                        case 'popular': {
+                            const requests = [createRequestObject(MangaPlusHelper_1.PopularRequest)];
+                            const responses = yield Promise.all(requests.map((request) => this.requestManager.schedule(request, 1)));
+                            const data = responses.map((response) => createByteArray(response.rawData));
+                            results = this.parser.parsePopularSection(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager));
+                            break;
+                        }
+                        case 'latest': {
+                            const requests = [
+                                createRequestObject(MangaPlusHelper_1.LatestUpdatesRequest),
+                                createRequestObject(MangaPlusHelper_1.PopularRequest)
+                            ];
+                            const responses = yield Promise.all(requests.map((request) => this.requestManager.schedule(request, 1)));
+                            const data = responses.map((response) => createByteArray(response.rawData));
+                            results = this.parser.parseRecentUpdatesSection(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager));
+                            break;
+                        }
+                        default:
+                            return Promise.resolve(createPagedResults({ results: [] }));
                     }
-                    case 'latest': {
-                        requests = [
-                            createRequestObject(MangaPlusHelper_1.LatestUpdatesRequest),
-                            createRequestObject(MangaPlusHelper_1.PopularRequest)
-                        ];
-                        const responses = yield Promise.all(requests.map((request) => this.requestManager.schedule(request, 1)));
-                        const data = responses.map((response) => createByteArray(response.rawData));
-                        results = this.parser
-                            .parseRecentUpdatesSection(data, yield (0, MangaPlusSettings_1.getLanguages)(this.stateManager))
-                            .slice(offset, offset + 100);
-                        break;
-                    }
-                    default:
-                        return Promise.resolve(createPagedResults({ results: [] }));
+                    metadata = {
+                        manga: results,
+                        offset: 0
+                    };
                 }
                 return createPagedResults({
-                    results,
-                    metadata: { offset: offset + 100 }
+                    results: metadata.manga.slice(metadata.offset, metadata.offset + 100),
+                    metadata: {
+                        manga: metadata.manga,
+                        offset: metadata.offset + 100
+                    }
                 });
             }
             catch (error) {
