@@ -43,7 +43,7 @@ import { ImageInterceptor,
 
 
 export const MangaPlusInfo: SourceInfo = {
-    version: '1.0.2',
+    version: '1.0.3',
     name: 'MangaPlus',
     description: 'Extension that pulls licensed manga from MangaPlus.',
     author: 'GameFuzzy',
@@ -156,46 +156,52 @@ export class MangaPlus extends Source {
         metadata: any
     ): Promise<PagedResults> {
         try{
-            const offset: number = metadata?.offset ?? 0
-
-            let id
-            if (query.parameters && query.parameters['id'] && query.parameters['id'][0]) {
-                id = query.parameters['id'][0].match(ID_REGEX)
-            }
-
-            if (id && id[0]) {
-                const manga = await this.getMangaDetails(id[0])
-
-                return createPagedResults({
-                    results: [
-                        createMangaTile({
-                            id: `${id[0]}`,
-                            image: manga.image,
-                            title: createIconText({ text: manga.titles[0] ?? '' })
-                        })
-                    ]
-                })
-            }
-            const request = createRequestObject({
-                url: `${API_DOMAIN}/title_list/allV2`,
-                method: 'GET',
-                headers: {
-                    referer: `${MANGAPLUS_DOMAIN}/manga_list/all`
+            if(!metadata) {
+                let id
+                if (query.parameters && query.parameters['id'] && query.parameters['id'][0]) {
+                    id = query.parameters['id'][0].match(ID_REGEX)
                 }
-            })
 
-            const response = await this.requestManager.schedule(request, 1)
+                if (id && id[0]) {
+                    const manga = await this.getMangaDetails(id[0])
 
-            const data = createByteArray(response.rawData)
-            const results = this.parser.parseSearchResults(
-                data,
-                await getLanguages(this.stateManager),
-                query
-            ).slice(offset, offset + 100)
+                    return createPagedResults({
+                        results: [
+                            createMangaTile({
+                                id: `${id[0]}`,
+                                image: manga.image,
+                                title: createIconText({text: manga.titles[0] ?? ''})
+                            })
+                        ],
+                        metadata: {
+                            manga: [],
+                            offset: 0
+                        }
+                    })
+                }
+                const request = createRequestObject({
+                    url: `${API_DOMAIN}/title_list/allV2`,
+                    method: 'GET',
+                    headers: {
+                        referer: `${MANGAPLUS_DOMAIN}/manga_list/all`
+                    }
+                })
 
+                const response = await this.requestManager.schedule(request, 1)
+
+                const data = createByteArray(response.rawData)
+                const results = this.parser.parseSearchResults(data, await getLanguages(this.stateManager), query)
+                metadata = {
+                    manga: results,
+                    offset: 0
+                }
+            }
             return createPagedResults({
-                results,
-                metadata: { offset: offset + 100 }
+                results: metadata.manga.slice(metadata.offset, metadata.offset + 100),
+                metadata: {
+                    manga: metadata.manga,
+                    offset: metadata.offset + 100
+                }
             })
         }
         catch (error: any) {
@@ -272,52 +278,54 @@ export class MangaPlus extends Source {
         metadata: any
     ): Promise<PagedResults> {
         try {
-            const offset: number = metadata?.offset ?? 0
-            let results
-            let requests
-            switch (homepageSectionId) {
-                case 'popular': {
-                    requests = [createRequestObject(PopularRequest)]
+            if(!metadata) {
+                let results
+                switch (homepageSectionId) {
+                    case 'popular': {
+                        const requests = [createRequestObject(PopularRequest)]
 
-                    const responses = await Promise.all(
-                        requests.map((request) => this.requestManager.schedule(request, 1))
-                    )
-                    const data = responses.map((response) =>
-                        createByteArray(response.rawData)
-                    )
+                        const responses = await Promise.all(
+                            requests.map((request) => this.requestManager.schedule(request, 1))
+                        )
+                        const data = responses.map((response) =>
+                            createByteArray(response.rawData)
+                        )
 
-                    results = this.parser
-                        .parsePopularSection(data, await getLanguages(this.stateManager))
-                        .slice(offset, offset + 100)
+                        results = this.parser.parsePopularSection(data, await getLanguages(this.stateManager))
 
-                    break
+                        break
+                    }
+                    case 'latest': {
+                        const requests = [
+                            createRequestObject(LatestUpdatesRequest),
+                            createRequestObject(PopularRequest)
+                        ]
+
+                        const responses = await Promise.all(
+                            requests.map((request) => this.requestManager.schedule(request, 1))
+                        )
+                        const data = responses.map((response) =>
+                            createByteArray(response.rawData)
+                        )
+
+                        results = this.parser.parseRecentUpdatesSection(data, await getLanguages(this.stateManager))
+                        break
+                    }
+                    default:
+                        return Promise.resolve(createPagedResults({results: []}))
                 }
-                case 'latest': {
-                    requests = [
-                        createRequestObject(LatestUpdatesRequest),
-                        createRequestObject(PopularRequest)
-                    ]
-
-                    const responses = await Promise.all(
-                        requests.map((request) => this.requestManager.schedule(request, 1))
-                    )
-                    const data = responses.map((response) =>
-                        createByteArray(response.rawData)
-                    )
-
-                    results = this.parser
-                        .parseRecentUpdatesSection(data, await getLanguages(this.stateManager))
-                        .slice(offset, offset + 100)
-
-                    break
+                metadata = {
+                    manga: results,
+                    offset: 0
                 }
-                default:
-                    return Promise.resolve(createPagedResults({results: []}))
             }
 
             return createPagedResults({
-                results,
-                metadata: {offset: offset + 100}
+                results: metadata.manga.slice(metadata.offset, metadata.offset + 100),
+                metadata: {
+                    manga: metadata.manga,
+                    offset: metadata.offset + 100
+                }
             })
         }
         catch (error: any) {
