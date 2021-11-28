@@ -20,7 +20,7 @@ import { Parser } from './Parser'
 const MANGAPILL_DOMAIN = 'https://www.mangapill.com'
 
 export const MangaPillInfo: SourceInfo = {
-    version: '2.0.8',
+    version: '2.0.9',
     name: 'MangaPill',
     description: 'Extension that pulls manga from mangapill.com. It has a lot of officially translated manga but can sometimes miss manga notifications',
     author: 'GameFuzzy',
@@ -182,18 +182,7 @@ export class MangaPill extends Source {
                     title: 'Latest Updates',
                     view_more: true,
                 }),
-            },
-            {
-                request: createRequestObject({
-                    url: `${MANGAPILL_DOMAIN}/search?q=&type=&status=`,
-                    method: 'GET'
-                }),
-                section: createHomeSection({
-                    id: 'popular',
-                    title: 'Popular',
-                    view_more: true
-                }),
-            },
+            }
         ]
 
         const promises: Promise<void>[] = []
@@ -210,9 +199,6 @@ export class MangaPill extends Source {
                         case 'latest':
                             section.section.items = this.parser.parseRecentUpdatesSection($)
                             break
-                        case 'popular':
-                            section.section.items = this.parser.parsePopularSection($)
-                            break
                         case 'featured':
                             section.section.items = this.parser.parseFeaturedSection($)
                     }
@@ -225,47 +211,30 @@ export class MangaPill extends Source {
         await Promise.all(promises)
     }
 
-    override async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
-        const page: number = metadata?.page ?? 1
-        let manga
-        let mData = undefined
-        switch (homepageSectionId) {
+    override async getViewMoreItems(_: string, metadata: any): Promise<PagedResults> {
+        
+        if (!metadata) {
+            const request = createRequestObject({
+                url: `${MANGAPILL_DOMAIN}/chapters`,
+                method: 'GET'
+            })
 
-            case 'latest': {
-                const request = createRequestObject({
-                    url: `${MANGAPILL_DOMAIN}/chapters`,
-                    method: 'GET'
-                })
+            const data = await this.requestManager.schedule(request, 1)
+            const $ = this.cheerio.load(data.data)
 
-                const data = await this.requestManager.schedule(request, 1)
-                const $ = this.cheerio.load(data.data)
-
-                manga = this.parser.parseRecentUpdatesSection($)
-                break
+            metadata = {
+                data: this.parser.parseRecentUpdatesSection($),
+                offset: 0
             }
-            case 'popular': {
-                const request = createRequestObject({
-                    url: `${MANGAPILL_DOMAIN}/search?q=&type=&status=&page=${page}`,
-                    method: 'GET'
-                })
-
-                const data = await this.requestManager.schedule(request, 1)
-                const $ = this.cheerio.load(data.data)
-
-                manga = this.parser.parsePopularSection($)
-                if (!this.parser.isLastPage($)) {
-                    mData = {page: (page + 1)}
-                }
-
-                break
-            }
-            default:
-                return Promise.resolve(createPagedResults({results: []}))
         }
+
+        const manga = metadata.slice(metadata.offset, metadata.offset + 20)
+
+        metadata.offset += 20
 
         return createPagedResults({
             results: manga,
-            metadata: mData
+            metadata
         })
     }
 

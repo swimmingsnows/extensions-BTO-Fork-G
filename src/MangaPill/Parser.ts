@@ -17,7 +17,7 @@ export class Parser {
 
         const titles = [this.decodeHTMLEntity($('.font-bold.text-lg').text().trim())]
         const image = $('.lazy').attr('data-src')
-        const summary = $('p.text-sm.text-color-text-secondary').text().trim()
+        const summary = $('.text-sm.text--secondary').text().trim()
 
         let status = MangaStatus.ONGOING, released, rating = 0
         let tagArrayGenres: Tag[] = []
@@ -88,7 +88,7 @@ export class Parser {
 
         const chapters: Chapter[] = []
 
-        for (const obj of $('a.border.border-color-border-primary.p-1').toArray()) {
+        for (const obj of $('.p-1').toArray()) {
             const chapterId = $(obj).attr('href')
             if (chapterId == 'Read Chapters') {
                 continue
@@ -172,7 +172,7 @@ export class Parser {
 
         for (const obj of $('.grid.gap-1 input').toArray()) {
             const label = $(obj).parent().text().trim()
-            const id = '&genre=' + $(obj).attr('value') ?? label
+            const id = encodeURIComponent('&genre=' + $(obj).attr('value') ?? label)
             tagSections[0]!.tags = [...tagSections[0]?.tags ?? [], createTag({id, label})]
         }
 
@@ -182,7 +182,7 @@ export class Parser {
             // Capitalize first letter
             label = label.charAt(0).toUpperCase() + label.slice(1)
 
-            const id = '&type=' + $(obj).attr('value') ?? label
+            const id = encodeURIComponent('&type=' + $(obj).attr('value') ?? label)
             tagSections[1]!.tags = [...tagSections[1]?.tags ?? [], createTag({id, label})]
         }
 
@@ -192,33 +192,11 @@ export class Parser {
             // Capitalize first letter
             label = label.charAt(0).toUpperCase() + label.slice(1)
 
-            const id = '&status=' + $(obj).attr('value') ?? label
+            const id = encodeURIComponent('&status=' + $(obj).attr('value') ?? label)
             tagSections[2]!.tags = [...tagSections[2]?.tags ?? [], createTag({id, label})]
         }
 
         return tagSections
-    }
-
-    parsePopularSection($: any): MangaTile[] {
-        const mangaTiles: MangaTile[] = []
-        const collectedIds: string[] = []
-        for (const obj of $('div', $('.grid.gap-3')).toArray()) {
-            const id = $('a', $(obj)).attr('href')?.replace('/manga/', '')
-            const titleText = this.decodeHTMLEntity($('a', $('div', $(obj))).text())
-            
-            const image = $('img', $('a', $(obj))).attr('data-src')
-
-            if (typeof id === 'undefined' || typeof image === 'undefined') continue
-            if (!collectedIds.includes(id)) {
-                mangaTiles.push(createMangaTile({
-                    id: id,
-                    title: createIconText({text: titleText}),
-                    image: image
-                }))
-                collectedIds.push(id)
-            }
-        }
-        return mangaTiles
     }
 
     parseFeaturedSection($ : any): MangaTile[]{
@@ -247,9 +225,9 @@ export class Parser {
     parseRecentUpdatesSection($: any): MangaTile[] {
         const mangaTiles: MangaTile[] = []
         const collectedIds: string[] = []
-        for (const obj of $('div.flex.bg-color-bg-secondary.p-2.rounded').toArray()) {
+        for (const obj of $('.flex.bg-card.p-2.rounded').toArray()) {
             const id = $('a.inilne.block', obj).attr('href')?.replace('/manga/', '')
-            const titleText = this.decodeHTMLEntity($('a.inilne.block', obj).text())
+            const titleText = this.decodeHTMLEntity($('a.inilne.block', obj).text().trim())
 
             const image = $('img', $('a', $(obj))).attr('data-src')
 

@@ -1,5 +1,6 @@
 {
   "name": "extensions-gamefuzzy",
+  "repositoryName": "GameFuzzy's Extensions",
   "version": "1.0.0",
   "description": "Additional sources for Paperback",
   "scripts": {
