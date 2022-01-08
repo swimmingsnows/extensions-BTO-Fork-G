@@ -706,7 +706,7 @@ class MangaPill extends paperback_extensions_common_1.Source {
             const request = createRequestObject({
                 url: `${MANGAPILL_DOMAIN}/search`,
                 method: 'GET',
-                param: encodeURI(`?q=${(_d = query.title) !== null && _d !== void 0 ? _d : ''}${tags}&page=${page}`)
+                param: (`?q=${(_d = query.title) !== null && _d !== void 0 ? _d : ''}${tags}&page=${page}`)
             });
             const data = yield this.requestManager.schedule(request, 1);
             const $ = this.cheerio.load(data.data);
@@ -796,7 +796,7 @@ class MangaPill extends paperback_extensions_common_1.Source {
                     offset: 0
                 };
             }
-            const manga = metadata.slice(metadata.offset, metadata.offset + 20);
+            const manga = metadata.data.slice(metadata.offset, metadata.offset + 20);
             metadata.offset += 20;
             return createPagedResults({
                 results: manga,
@@ -977,22 +977,22 @@ class Parser {
             createTagSection({ id: 'format', label: 'Format', tags: [] }), createTagSection({ id: 'status', label: 'Status', tags: [] })];
         for (const obj of $('.grid.gap-1 input').toArray()) {
             const label = $(obj).parent().text().trim();
-            const id = encodeURIComponent((_a = '&genre=' + $(obj).attr('value')) !== null && _a !== void 0 ? _a : label);
-            tagSections[0].tags = [...(_c = (_b = tagSections[0]) === null || _b === void 0 ? void 0 : _b.tags) !== null && _c !== void 0 ? _c : [], createTag({ id, label })];
+            const id = ((_a = '&genre=' + $(obj).attr('value')) !== null && _a !== void 0 ? _a : label).replace(/\s/g, '+');
+            tagSections[0].tags = [...((_c = (_b = tagSections[0]) === null || _b === void 0 ? void 0 : _b.tags) !== null && _c !== void 0 ? _c : []), createTag({ id, label })];
         }
         for (const obj of $('select#type option:not([value=""])').toArray()) {
             let label = $(obj).text().trim();
             // Capitalize first letter
             label = label.charAt(0).toUpperCase() + label.slice(1);
-            const id = encodeURIComponent((_d = '&type=' + $(obj).attr('value')) !== null && _d !== void 0 ? _d : label);
-            tagSections[1].tags = [...(_f = (_e = tagSections[1]) === null || _e === void 0 ? void 0 : _e.tags) !== null && _f !== void 0 ? _f : [], createTag({ id, label })];
+            const id = ((_d = '&type=' + $(obj).attr('value')) !== null && _d !== void 0 ? _d : label);
+            tagSections[1].tags = [...((_f = (_e = tagSections[1]) === null || _e === void 0 ? void 0 : _e.tags) !== null && _f !== void 0 ? _f : []), createTag({ id, label })];
         }
         for (const obj of $('select#status option:not([value=""])').toArray()) {
             let label = $(obj).text().trim();
             // Capitalize first letter
             label = label.charAt(0).toUpperCase() + label.slice(1);
-            const id = encodeURIComponent((_g = '&status=' + $(obj).attr('value')) !== null && _g !== void 0 ? _g : label);
-            tagSections[2].tags = [...(_j = (_h = tagSections[2]) === null || _h === void 0 ? void 0 : _h.tags) !== null && _j !== void 0 ? _j : [], createTag({ id, label })];
+            const id = ((_g = '&status=' + $(obj).attr('value')) !== null && _g !== void 0 ? _g : label).replace(/\s/g, '+');
+            tagSections[2].tags = [...((_j = (_h = tagSections[2]) === null || _h === void 0 ? void 0 : _h.tags) !== null && _j !== void 0 ? _j : []), createTag({ id, label })];
         }
         return tagSections;
     }
