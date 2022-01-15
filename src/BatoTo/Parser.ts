@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
     Chapter,
     LanguageCode,
@@ -14,84 +15,20 @@ const CryptoJS = require('./external/crypto.min.js')
 
 export class Parser {
 
-
     parseMangaDetails($: any, mangaId: string): Manga {
-
         const titles = [this.decodeHTMLEntity($('a', $('.item-title')).text().trim())]
         const altTitles: string[] = $('.alias-set').text().split('/').map((s: string) => s.trim()) ?? ''
         for (const title of altTitles)
             titles.push(this.decodeHTMLEntity(title))
 
         const image = $('.shadow-6').attr('src')
-
-        const summary = $('pre', $('.attr-main')).text().trim()
-
-        let status = MangaStatus.ONGOING, author, released, views = 0, isHentai = false
+        const summary = $('.limit-html').text().trim().length == 0 ? 'no description' : $('.limit-html').text().trim()
         const rating = 0
 
-        let tagArray0: Tag[] = []
-        let i = 0
-        for (const item of $('.attr-item').toArray()) {
-            const itemSpan = $('span', $(item))
-            switch (i) {
-                case 0: {
-                    // Views
-                    views = parseInt($(itemSpan).text().split('/')[1].trim())
-                    i++
-                    continue
-                }
-                case 1: {
-                    // Author
-                    const authorList: any = $('a', $(itemSpan))
-                    author = authorList.map((_i: any, elem: any) => $(elem).text()).get().join(', ') ?? ''
-                    i++
-                    continue
-                }
-                case 2: {
-                    // Genres
-                    for (const obj of $(itemSpan).children().toArray()) {
-                        const label = $(obj).text().trim()
-                        if (typeof label === 'undefined') {
-                            i++
-                            continue
-                        }
-                        tagArray0 = [...tagArray0, createTag({id: label, label: label})]
-                    }
-                    i++
-                    continue
-                }
-                case 3: {
-                    i++
-                    continue
-                }
-                case 4: {
-                    // Status
-                    if ($(itemSpan).text().toLowerCase().includes('ongoing')) {
-                        status = MangaStatus.ONGOING
-                    } else {
-                        status = MangaStatus.COMPLETED
-                    }
-                    i++
-                    continue
-                }
-                case 5: {
-                    // Date of release
-                    released = ($(itemSpan).text().trim()) ?? undefined
-                    i++
-                    continue
-                }
-                case 6: {
-                    // Hentai
-                    if ($(itemSpan).text()[0] == 'G') {
-                        isHentai = true
-                    }
-                    i++
-                    continue
-                }
-            }
-            i = 0
-        }
+        const [status, author, artist, strViews, isHentai, tagArray0] = this.parseDetailsSet($)
+        const views = this.calculateViews(strViews)
         const tagSections: TagSection[] = [createTagSection({id: '0', label: 'genres', tags: tagArray0})]
+
         return createManga({
             id: mangaId,
             rating: rating,
@@ -99,12 +36,48 @@ export class Parser {
             image: image ?? '',
             status: status,
             author: this.decodeHTMLEntity(author ?? ''),
+            artist: this.decodeHTMLEntity(artist ?? ''),
             tags: tagSections,
             desc: this.decodeHTMLEntity(summary),
-            lastUpdate: released,
             hentai: isHentai,
-            views: views
+            views: views ?? 0,
         })
+    }
+
+    parseDetailsSet($:any): any {
+        let status = MangaStatus.ONGOING, author='', artist='', strViews = '', isHentai = false
+        let tagArray0: Tag[] = []
+        // Function checks this array to determine if the manga is H-type
+        const hentaiId = ['adult', 'mature', 'hentai', 'smut', 'gore']
+
+        for (const item of $('.attr-item').toArray()) {
+            const itemSpan = $('span', $(item))
+            const type = $('b', $(item)).text().trim().toLowerCase()
+
+            if      (type.includes('rank'))    strViews = $(itemSpan).text().split('/')[1].trim().split(' ')[0]
+            else if (type.includes('author'))  author   = $(itemSpan).text().replace(/\s\s+/g, '').replace(/\n/g, '')
+            else if (type.includes('artist'))  artist   = $(itemSpan).text().replace(/\s\s+/g, '').replace(/\n/g, '')
+            else if (type.includes('status'))  status   = $(itemSpan).text().toLowerCase().includes('ongoing') ? MangaStatus.ONGOING : MangaStatus.COMPLETED
+
+            else if (type.includes('genre')) {
+                for (const obj of $(itemSpan).children().toArray()) {
+                    const label = $(obj).text().trim()
+                    if (typeof label === 'undefined') continue
+                    if (hentaiId.includes(label.toLowerCase())) isHentai = true
+                    tagArray0 = [...tagArray0, createTag({id: label, label: label})]
+                }
+            }
+        }
+        return [status, author, artist, strViews, isHentai, tagArray0]
+    }
+
+    calculateViews(str: string): number {
+        // Example input and output: 3.4K -> 3400 | 4.1M -> 4100000 | 322 -> 322
+        let ret = 0
+        if      (str.toLowerCase().includes('k')) ret = parseFloat(str) * 1000    ?? 0
+        else if (str.toLowerCase().includes('m')) ret = parseFloat(str) * 1000000 ?? 0
+        else ret = parseFloat(str) ?? 0
+        return Math.round(ret * 100) / 100
     }
 
 
@@ -122,11 +95,11 @@ export class Parser {
             const chapter = $('b', chapterTile).text()
             const chapNum = i+1
             const volume = Number(chapter?.split('chapter')[0]?.replace('volume', '').trim())
-            
+
             const language = $('.emoji').attr('data-lang') ?? 'gb'
             const time = source.convertTime($('i.ps-3', $(obj)).text())
             if ((typeof chapterId === 'undefined')) return
-            
+
             chapters.push(createChapter({
                 id: chapterId,
                 mangaId: mangaId,
@@ -185,7 +158,6 @@ export class Parser {
                 }
             }
         }
-
         return pages
     }
 
@@ -207,8 +179,6 @@ export class Parser {
         } else {
             return {updates: foundIds, loadNextPage: false}
         }
-
-
     }
 
     parseSearchResults($: any, source: any): MangaTile[] {
@@ -237,7 +207,6 @@ export class Parser {
     }
 
     parseHomePageSection($: any, source: any): MangaTile[] {
-
         const tiles: MangaTile[] = []
         const collectedIds: string[] = []
         for (const item of $('.item', $('#series-list')).toArray()) {
@@ -264,7 +233,6 @@ export class Parser {
 
     isLastPage($: any): boolean {
         return $('.page-item').last().hasClass('disabled')
-
     }
 
     decodeHTMLEntity(str: string): string {
