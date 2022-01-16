@@ -27051,10 +27051,10 @@ const paperback_extensions_common_1 = require("paperback-extensions-common");
 const Parser_1 = require("./Parser");
 const BATOTO_DOMAIN = 'https://bato.to';
 exports.BatoToInfo = {
-    version: '2.0.1',
+    version: '2.0.2',
     name: 'Bato.To',
     description: 'Extension that pulls western comics from bato.to',
-    author: 'GameFuzzy',
+    author: 'GameFuzzy & NmN',
     authorWebsite: 'http://github.com/gamefuzzy',
     icon: 'icon.png',
     contentRating: paperback_extensions_common_1.ContentRating.ADULT,
@@ -27347,84 +27347,23 @@ exports.reverseLangCode = {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const paperback_extensions_common_1 = require("paperback-extensions-common");
 const Languages_1 = require("./Languages");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const CryptoJS = require('./external/crypto.min.js');
 class Parser {
     parseMangaDetails($, mangaId) {
-        var _a, _b, _c;
+        var _a;
         const titles = [this.decodeHTMLEntity($('a', $('.item-title')).text().trim())];
         const altTitles = (_a = $('.alias-set').text().split('/').map((s) => s.trim())) !== null && _a !== void 0 ? _a : '';
         for (const title of altTitles)
             titles.push(this.decodeHTMLEntity(title));
         const image = $('.shadow-6').attr('src');
-        const summary = $('pre', $('.attr-main')).text().trim();
-        let status = paperback_extensions_common_1.MangaStatus.ONGOING, author, released, views = 0, isHentai = false;
+        const summary = $('.limit-html').text().trim().length == 0 ? 'no description' : $('.limit-html').text().trim();
         const rating = 0;
-        let tagArray0 = [];
-        let i = 0;
-        for (const item of $('.attr-item').toArray()) {
-            const itemSpan = $('span', $(item));
-            switch (i) {
-                case 0: {
-                    // Views
-                    views = parseInt($(itemSpan).text().split('/')[1].trim());
-                    i++;
-                    continue;
-                }
-                case 1: {
-                    // Author
-                    const authorList = $('a', $(itemSpan));
-                    author = (_b = authorList.map((_i, elem) => $(elem).text()).get().join(', ')) !== null && _b !== void 0 ? _b : '';
-                    i++;
-                    continue;
-                }
-                case 2: {
-                    // Genres
-                    for (const obj of $(itemSpan).children().toArray()) {
-                        const label = $(obj).text().trim();
-                        if (typeof label === 'undefined') {
-                            i++;
-                            continue;
-                        }
-                        tagArray0 = [...tagArray0, createTag({ id: label, label: label })];
-                    }
-                    i++;
-                    continue;
-                }
-                case 3: {
-                    i++;
-                    continue;
-                }
-                case 4: {
-                    // Status
-                    if ($(itemSpan).text().toLowerCase().includes('ongoing')) {
-                        status = paperback_extensions_common_1.MangaStatus.ONGOING;
-                    }
-                    else {
-                        status = paperback_extensions_common_1.MangaStatus.COMPLETED;
-                    }
-                    i++;
-                    continue;
-                }
-                case 5: {
-                    // Date of release
-                    released = (_c = ($(itemSpan).text().trim())) !== null && _c !== void 0 ? _c : undefined;
-                    i++;
-                    continue;
-                }
-                case 6: {
-                    // Hentai
-                    if ($(itemSpan).text()[0] == 'G') {
-                        isHentai = true;
-                    }
-                    i++;
-                    continue;
-                }
-            }
-            i = 0;
-        }
+        const [status, author, artist, strViews, isHentai, tagArray0] = this.parseDetailsSet($);
+        const views = this.calculateViews(strViews);
         const tagSections = [createTagSection({ id: '0', label: 'genres', tags: tagArray0 })];
         return createManga({
             id: mangaId,
@@ -27433,12 +27372,53 @@ class Parser {
             image: image !== null && image !== void 0 ? image : '',
             status: status,
             author: this.decodeHTMLEntity(author !== null && author !== void 0 ? author : ''),
+            artist: this.decodeHTMLEntity(artist !== null && artist !== void 0 ? artist : ''),
             tags: tagSections,
             desc: this.decodeHTMLEntity(summary),
-            lastUpdate: released,
             hentai: isHentai,
-            views: views
+            views: views !== null && views !== void 0 ? views : 0,
         });
+    }
+    parseDetailsSet($) {
+        let status = paperback_extensions_common_1.MangaStatus.ONGOING, author = '', artist = '', strViews = '', isHentai = false;
+        let tagArray0 = [];
+        // Function checks this array to determine if the manga is H-type
+        const hentaiId = ['adult', 'mature', 'hentai', 'smut', 'gore'];
+        for (const item of $('.attr-item').toArray()) {
+            const itemSpan = $('span', $(item));
+            const type = $('b', $(item)).text().trim().toLowerCase();
+            if (type.includes('rank'))
+                strViews = $(itemSpan).text().split('/')[1].trim().split(' ')[0];
+            else if (type.includes('author'))
+                author = $(itemSpan).text().replace(/\s\s+/g, '').replace(/\n/g, '');
+            else if (type.includes('artist'))
+                artist = $(itemSpan).text().replace(/\s\s+/g, '').replace(/\n/g, '');
+            else if (type.includes('status'))
+                status = $(itemSpan).text().toLowerCase().includes('ongoing') ? paperback_extensions_common_1.MangaStatus.ONGOING : paperback_extensions_common_1.MangaStatus.COMPLETED;
+            else if (type.includes('genre')) {
+                for (const obj of $(itemSpan).children().toArray()) {
+                    const label = $(obj).text().trim();
+                    if (typeof label === 'undefined')
+                        continue;
+                    if (hentaiId.includes(label.toLowerCase()))
+                        isHentai = true;
+                    tagArray0 = [...tagArray0, createTag({ id: label, label: label })];
+                }
+            }
+        }
+        return [status, author, artist, strViews, isHentai, tagArray0];
+    }
+    calculateViews(str) {
+        var _a, _b, _c;
+        // Example input and output: 3.4K -> 3400 | 4.1M -> 4100000 | 322 -> 322
+        let ret = 0;
+        if (str.toLowerCase().includes('k'))
+            ret = (_a = parseFloat(str) * 1000) !== null && _a !== void 0 ? _a : 0;
+        else if (str.toLowerCase().includes('m'))
+            ret = (_b = parseFloat(str) * 1000000) !== null && _b !== void 0 ? _b : 0;
+        else
+            ret = (_c = parseFloat(str)) !== null && _c !== void 0 ? _c : 0;
+        return Math.round(ret * 100) / 100;
     }
     parseChapterList($, mangaId, source) {
         const chapters = [];
