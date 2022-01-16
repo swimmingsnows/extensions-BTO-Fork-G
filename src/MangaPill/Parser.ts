@@ -14,7 +14,6 @@ const entities = require('entities')
 export class Parser {
 
     parseMangaDetails($: any, mangaId: string): Manga {
-
         const titles = [this.decodeHTMLEntity($('.font-bold.text-lg').text().trim())]
         const image = $('.lazy').attr('data-src')
         const summary = $('.text-sm.text--secondary').text().trim()
@@ -140,8 +139,6 @@ export class Parser {
         } else {
             return {updates: foundIds, loadNextPage: false}
         }
-
-
     }
 
     parseSearchResults($: any): MangaTile[] {
@@ -172,7 +169,8 @@ export class Parser {
 
         for (const obj of $('.grid.gap-1 input').toArray()) {
             const label = $(obj).parent().text().trim()
-            const id = encodeURIComponent('&genre=' + $(obj).attr('value') ?? label)
+
+            const id = ('&genre=' + $(obj).attr('value') ?? label).replace(/\s/g, '+')
             tagSections[0]!.tags = [...tagSections[0]?.tags ?? [], createTag({id, label})]
         }
 
@@ -182,20 +180,18 @@ export class Parser {
             // Capitalize first letter
             label = label.charAt(0).toUpperCase() + label.slice(1)
 
-            const id = encodeURIComponent('&type=' + $(obj).attr('value') ?? label)
+            const id = ('&type=' + $(obj).attr('value') ?? label)
             tagSections[1]!.tags = [...tagSections[1]?.tags ?? [], createTag({id, label})]
         }
 
         for (const obj of $('select#status option:not([value=""])').toArray()) {
-
             let label = $(obj).text().trim()
+
             // Capitalize first letter
             label = label.charAt(0).toUpperCase() + label.slice(1)
-
-            const id = encodeURIComponent('&status=' + $(obj).attr('value') ?? label)
+            const id = ('&status=' + $(obj).attr('value') ?? label).replace(/\s/g, '+')
             tagSections[2]!.tags = [...tagSections[2]?.tags ?? [], createTag({id, label})]
         }
-
         return tagSections
     }
 
@@ -247,7 +243,7 @@ export class Parser {
     isLastPage($: any): boolean {
         return $('a:contains("Next")').length < 1
     }
-    
+
     decodeHTMLEntity(str: string): string {
         return str.replace(/&#(\d+);/g, (_match, dec) => {
             return entities.decodeHTML(String.fromCharCode(dec))

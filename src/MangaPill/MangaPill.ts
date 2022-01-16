@@ -20,7 +20,7 @@ import { Parser } from './Parser'
 const MANGAPILL_DOMAIN = 'https://www.mangapill.com'
 
 export const MangaPillInfo: SourceInfo = {
-    version: '2.0.9',
+    version: '2.1.0',
     name: 'MangaPill',
     description: 'Extension that pulls manga from mangapill.com. It has a lot of officially translated manga but can sometimes miss manga notifications',
     author: 'GameFuzzy',
@@ -53,7 +53,6 @@ export class MangaPill extends Source {
     }
 
     async getMangaDetails(mangaId: string): Promise<Manga> {
-
         const request = createRequestObject({
             url: `${MANGAPILL_DOMAIN}/manga/${mangaId}`,
             method: 'GET'
@@ -98,7 +97,6 @@ export class MangaPill extends Source {
     }
 
     override async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
-
         const request = createRequestObject({
             url: `${MANGAPILL_DOMAIN}/chapters`,
             method: 'GET'
@@ -124,7 +122,7 @@ export class MangaPill extends Source {
         const request = createRequestObject({
             url: `${MANGAPILL_DOMAIN}/search`,
             method: 'GET',
-            param: encodeURI(`?q=${query.title ?? ''}${tags}&page=${page}`)
+            param: `?q=${query.title ?? ''}${tags}&page=${page}`
         })
 
         const data = await this.requestManager.schedule(request, 1)
@@ -159,7 +157,6 @@ export class MangaPill extends Source {
 
 
     override async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
-
         const sections = [
             {
                 request: createRequestObject({
@@ -212,7 +209,6 @@ export class MangaPill extends Source {
     }
 
     override async getViewMoreItems(_: string, metadata: any): Promise<PagedResults> {
-        
         if (!metadata) {
             const request = createRequestObject({
                 url: `${MANGAPILL_DOMAIN}/chapters`,
@@ -228,7 +224,7 @@ export class MangaPill extends Source {
             }
         }
 
-        const manga = metadata.slice(metadata.offset, metadata.offset + 20)
+        const manga = metadata.data.slice(metadata.offset, metadata.offset + 20)
 
         metadata.offset += 20
 
