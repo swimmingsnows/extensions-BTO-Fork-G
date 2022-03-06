@@ -7,7 +7,6 @@
     "start": "tsc && node dist/api.js",
     "build": "tsc",
     "test": "node_modules/.bin/mocha --timeout 300000 -r ts-node/register src/**/*.test.ts",
-    "debug": "paperback logcat --ip=100.64.9.88",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
     "bundle": "paperback bundle",
     "serve": "paperback serve -p 8000"
