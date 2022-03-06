@@ -14,7 +14,7 @@ const entities = require('entities')
 export class Parser {
 
     parseMangaDetails($: any, mangaId: string): Manga {
-        const titles = [this.decodeHTMLEntity($('.font-bold.text-lg').text().trim())]
+        const titles = [this.decodeHTMLEntity( $('.lazy').attr('alt') ?? '')]
         const image = $('.lazy').attr('data-src')
         const summary = $('.text-sm.text--secondary').text().trim()
 
@@ -197,12 +197,10 @@ export class Parser {
 
     parseFeaturedSection($ : any): MangaTile[]{
         const mangaTiles: MangaTile[] = []
-        for(const obj of $('div[class=relative]:not([id="search-popup"])').toArray()) {
-            const href = ($('a', $(obj)).attr('href') ?? '')
-            const id = href.split('-')[0].split('/').pop() + '/' + href.split('/').pop()?.split('-chapter')[0].trim()
-            const titleText = this.decodeHTMLEntity($('.text-white:last-child', $(obj)).text())
-
-            const image = $('img', $('div', $(obj))).attr('data-src')
+        for(const obj of $('div.my-6 .featured-grid .rounded').toArray()) {
+            const id        = $('a:nth-child(2)', obj).attr('href')?.replace('/manga/', '')
+            const titleText = this.decodeHTMLEntity($('a:nth-child(2)', obj).text().trim())
+            const image     = $('a img', obj).attr('data-src') ?? ''
 
             const collectedIds: string[] = []
             if (typeof id === 'undefined' || typeof image === 'undefined') continue
@@ -221,11 +219,11 @@ export class Parser {
     parseRecentUpdatesSection($: any): MangaTile[] {
         const mangaTiles: MangaTile[] = []
         const collectedIds: string[] = []
-        for (const obj of $('.flex.bg-card.p-2.rounded').toArray()) {
-            const id = $('a.inilne.block', obj).attr('href')?.replace('/manga/', '')
-            const titleText = this.decodeHTMLEntity($('a.inilne.block', obj).text().trim())
 
-            const image = $('img', $('a', $(obj))).attr('data-src')
+        for (const obj of $('div.grid div:not([class])').toArray()) {
+            const id        = $('a.text-secondary', obj).attr('href')?.replace('/manga/', '')
+            const titleText = this.decodeHTMLEntity($('a.text-secondary', obj).text().trim())
+            const image     = $('a figure img', obj).attr('data-src')
 
             if (typeof id === 'undefined' || typeof image === 'undefined') continue
             if (!collectedIds.includes(id)) {
