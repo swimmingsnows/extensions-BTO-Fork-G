@@ -122,38 +122,21 @@ export class Parser {
         for (const scriptObj of scripts) {
             const script = scriptObj.children[0]?.data
             if (typeof script === 'undefined') continue
-            if (script.includes('var images =')) {
-                const imgJson = JSON.parse(script.split('var images = ', 2)[1].split(';', 2)[0] ?? '') as any
-                const imgNames = imgJson.names()
-
-                if (imgNames != null) {
-                    for (let i = 0; i < imgNames.length(); i++) {
-                        const imgKey = imgNames.getString(i)
-                        const imgUrl = imgJson.getString(imgKey)
-                        pages.push(imgUrl)
-                    }
-                }
-
-            } else if (script.includes('const server =')) {
-                const encryptedServer = (script.split('const server = ', 2)[1].split(';', 2)[0] ?? '').replace(/"/g, '')
-                const batoJS = eval(script.split('const batojs = ', 2)[1].split(';', 2)[0] ?? '').toString()
-                const decryptScript = CryptoJS.AES.decrypt(encryptedServer, batoJS).toString(CryptoJS.enc.Utf8)
-                const server = decryptScript.toString().replace(/"/g, '')
-                const imgArray = JSON.parse(script.split('const images = ', 2)[1].split(';', 2)[0] ?? '') as any
+            if (script.includes('const batoWord =')) {
+                /*
+                  https://xfs-003.batcg.com/comic/7002/d32/60fb603d33142e3200f1223d/8351241_720_380_88450.jpeg?acc=Bg31t3HEbG1iSOK0lW_9XQ&exp=1654079974
+                  imgArr[n] = https://xfs-003.batcg.com/comic/7002/d32/60fb603d33142e3200f1223d/8351241_720_380_88450.jpeg
+                  tknArr[n] = acc=Bg31t3HEbG1iSOK0lW_9XQ&exp=1654079974
+                */
+                const batoJS = eval(script.split('const batoPass = ', 2)[1].split(';', 2)[0] ?? '').toString()
+                const imgArray = JSON.parse(script.split('const imgHttpLis = ', 2)[1].split(';', 2)[0] ?? '')
+                const encryptedToken = (script.split('const batoWord = ', 2)[1].split(';', 2)[0] ?? '').replace(/"/g, '')
+                const decryptScript = CryptoJS.AES.decrypt(encryptedToken, batoJS).toString(CryptoJS.enc.Utf8)
+                const tknArray = decryptScript.toString().replace(/"/g, '').replace(/[[\]']+/g,'', '').split(',')
                 if (imgArray != null) {
-                    if (script.includes('bato.to/images')) {
-                        for (let i = 0; i < imgArray.length; i++) {
-                            const imgUrl = imgArray[i]
-                            pages.push(`${imgUrl}`)
-                        }
-                    } else {
-                        for (let i = 0; i < imgArray.length; i++) {
-                            const imgUrl = imgArray[i]
-                            if (server.startsWith('http'))
-                                pages.push(`${server}${imgUrl}`)
-                            else
-                                pages.push(`https:${server}${imgUrl}`)
-                        }
+                    for (let i = 0; i < imgArray.length; i++) {
+                        if (i >= tknArray.length) break
+                        pages.push(`${imgArray[i]}?${tknArray[i]}`)
                     }
                 }
             }
