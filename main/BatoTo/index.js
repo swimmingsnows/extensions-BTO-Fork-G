@@ -27340,6 +27340,9 @@ const Languages_1 = require("./Languages");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const CryptoJS = require('./external/crypto.min.js');
 class Parser {
+    constructor() {
+        this.pages = imgList.map((value, index) => `${value}?$ {tknList[index]}`);
+    }
     parseMangaDetails($, mangaId) {
         var _a;
         const titles = [this.decodeHTMLEntity($('a', $('.item-title')).text().trim())];
@@ -27459,8 +27462,11 @@ class Parser {
                 const decryptScript = CryptoJS.AES.decrypt(encryptedToken, batoJS).toString(CryptoJS.enc.Utf8);
                 const tknArray = decryptScript.toString().replace(/"/g, '').replace(/[[\]']+/g, '', '').split(',');
                 if (imgArray != null) {
-                    const pages = imgList.map((value, index) => `${value}?$
-                {tknList[index]}`);
+                    for (let i = 0; i < imgArray.length; i++) {
+                        if (i >= tknArray.length)
+                            break;
+                        pages.push(`${imgArray[i]}?${tknArray[i]}`);
+                    }
                 }
             }
         }
