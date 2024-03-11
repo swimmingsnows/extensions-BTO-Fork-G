@@ -137,14 +137,6 @@ export class Parser {
 
                 const pages = imgList.map((value: string, index: number) => `${value}?${tknList[index]}`)
 
-                const chapterDetails = App.createChapterDetails({
-                id: chapterId,
-                mangaId: mangaId,
-                pages: pages
-            })
-            return chapterDetails
-    }
-
     filterUpdatedManga($: any, time: Date, ids: string[], source: any): { updates: string[], loadNextPage: boolean } {
         const foundIds: string[] = []
         let passedReferenceTime = false
