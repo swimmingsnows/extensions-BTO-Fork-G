@@ -141,8 +141,8 @@ export class Parser {
                 id: chapterId,
                 mangaId: mangaId,
                 pages: pages
-           })
-           return chapterDetails
+            })
+            return chapterDetails
     }
 
     filterUpdatedManga($: any, time: Date, ids: string[], source: any): { updates: string[], loadNextPage: boolean } {
