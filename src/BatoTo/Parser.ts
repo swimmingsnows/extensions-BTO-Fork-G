@@ -136,6 +136,12 @@ export class Parser {
                 if (imgArray != null) 
 
                 const pages = imgList.map((value: string, index: number) => `${value}?${tknList[index]}`)
+                   }
+                }
+            }
+        }
+        return pages
+    }
 
     filterUpdatedManga($: any, time: Date, ids: string[], source: any): { updates: string[], loadNextPage: boolean } {
         const foundIds: string[] = []
