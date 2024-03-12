@@ -134,15 +134,13 @@ export class Parser {
                 const decryptScript = CryptoJS.AES.decrypt(encryptedToken, batoJS).toString(CryptoJS.enc.Utf8)
                 const tknArray = decryptScript.toString().replace(/"/g, '').replace(/[[\]']+/g,'', '').split(',')
                 if (imgArray != null) 
-
-                const pages = imgList.map((value: string, index: number) => `${value}?${tknList[index]}`)
-                   }
-                }
-            }
+                    const pages = imgList.map((value: string, index: number) => `${value}?${tknList[index]}`)
+               }
         }
+    }
+}
         return pages
     }
-
     filterUpdatedManga($: any, time: Date, ids: string[], source: any): { updates: string[], loadNextPage: boolean } {
         const foundIds: string[] = []
         let passedReferenceTime = false
