@@ -27340,9 +27340,6 @@ const Languages_1 = require("./Languages");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const CryptoJS = require('./external/crypto.min.js');
 class Parser {
-    constructor() {
-        this.pages = imgList.map((value, index) => `${value}?$ {tknList[index]}`);
-    }
     parseMangaDetails($, mangaId) {
         var _a;
         const titles = [this.decodeHTMLEntity($('a', $('.item-title')).text().trim())];
@@ -27457,16 +27454,12 @@ class Parser {
                   tknArr[n] = acc=Bg31t3HEbG1iSOK0lW_9XQ&exp=1654079974
                 */
                 const batoJS = eval((_b = script.split('const batoPass = ', 2)[1].split(';', 2)[0]) !== null && _b !== void 0 ? _b : '').toString();
-                const imgArray = JSON.parse((_c = script.split('const imgHttpLis = ', 2)[1].split(';', 2)[0]) !== null && _c !== void 0 ? _c : '');
+                const imgArray = JSON.parse((_c = script.split('const imgHttp = ', 2)[1].split(';', 2)[0]) !== null && _c !== void 0 ? _c : '');
                 const encryptedToken = ((_d = script.split('const batoWord = ', 2)[1].split(';', 2)[0]) !== null && _d !== void 0 ? _d : '').replace(/"/g, '');
                 const decryptScript = CryptoJS.AES.decrypt(encryptedToken, batoJS).toString(CryptoJS.enc.Utf8);
                 const tknArray = decryptScript.toString().replace(/"/g, '').replace(/[[\]']+/g, '', '').split(',');
                 if (imgArray != null) {
-                    for (let i = 0; i < imgArray.length; i++) {
-                        if (i >= tknArray.length)
-                            break;
-                        pages.push(`${imgArray[i]}?${tknArray[i]}`);
-                    }
+                    const pages = imgList.map((value, index) => `${value}?${tknList[index]}`);
                 }
             }
         }
