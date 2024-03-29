@@ -134,7 +134,6 @@ export class Parser {
                 const decryptScript = CryptoJS.AES.decrypt(encryptedToken, batoJS).toString(CryptoJS.enc.Utf8)
                 const tknArray = decryptScript.toString().replace(/"/g, '').replace(/[[\]']+/g,'', '').split(',')
                 if (imgArray != null) { const pages = imgList.map((value: string, index: number) => `${value}?${tknList[index]}`)                      
-            
                 }
             }
         }
